@@ -128,20 +128,27 @@
         input, select { 
             width: 100%; padding: 14px; border: 1px solid rgba(255, 255, 255, 0.1); 
             border-radius: 16px; font-size: 15px; outline: none; box-sizing: border-box; 
-            background: rgba(255, 255, 255, 0.08); color: white; transition: 0.3s;
+            background: rgba(255, 255, 255, 0.08); color: white; transition: all 0.3s ease;
         }
         input::placeholder { color: rgba(255, 255, 255, 0.4); }
-        input:focus { border-color: var(--accent); background: rgba(255, 255, 255, 0.15); }
+        input:focus { border-color: var(--accent); background: rgba(255, 255, 255, 0.15); transform: translateY(-1px); }
         option { background: #2c3e50; color: white; }
 
         .autocomplete-suggestions {
             position: absolute; top: 100%; left: 0; right: 0;
             background: rgba(44, 62, 80, 0.95); border-radius: 14px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-            max-height: 180px; overflow-y: auto; z-index: 100; display: none; margin-top: 8px;
+            max-height: 180px; overflow-y: auto; z-index: 100; margin-top: 8px;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            /* Плавность появления */
+            opacity: 0; pointer-events: none; transform: translateY(-10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .suggestion { padding: 12px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; }
+        .autocomplete-suggestions.active {
+            opacity: 1; pointer-events: auto; transform: translateY(0);
+        }
+
+        .suggestion { padding: 12px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; transition: background 0.2s; }
         .suggestion:hover { background: rgba(255, 179, 71, 0.2); }
         .suggestion div { color: #aaa; font-size: 11px; }
 
@@ -327,15 +334,15 @@
                             div.innerHTML = `${typeLabel}${item.name} (${item.code}) <div>${item.country_name}</div>`;
                             div.onclick = () => {
                                 input.value = item.name + ' (' + item.code + ')';
-                                list.style.display = 'none';
+                                list.classList.remove('active');
                             };
                             list.appendChild(div);
                         });
-                        list.style.display = 'block';
-                    } else { list.style.display = 'none'; }
+                        list.classList.add('active');
+                    } else { list.classList.remove('active'); }
                 }, 300);
             });
-            document.addEventListener('click', (e) => { if (e.target !== input) list.style.display = 'none'; });
+            document.addEventListener('click', (e) => { if (e.target !== input) list.classList.remove('active'); });
         }
 
         setupAutocomplete('origin', 'origin-suggestions');
