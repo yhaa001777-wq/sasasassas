@@ -7,49 +7,58 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --glass: rgba(255, 255, 255, 0.9);
-            --blue: #0277BD;
-            --accent: #FF8E01;
+            --glass: rgba(255, 255, 255, 0.95);
+            --blue: #1a237e; /* Глубокий синий */
+            --accent: #d4af37; /* Золотой акцент */
+            --bg-top: #0f2027; /* Темный градиент */
+            --bg-bottom: #2c5364;
         }
 
         body {
             margin: 0; padding: 10px;
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(180deg, #87CEEB 0%, #E0F7FA 100%);
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
             min-height: 100vh; display: flex; align-items: center; justify-content: center;
             overflow-x: hidden;
         }
 
         /* Анимации неба */
-        .sun { position: absolute; top: 20px; right: 20px; width: 60px; height: 60px; background: radial-gradient(circle, #FFF9C4, #FBC02D); border-radius: 50%; box-shadow: 0 0 30px #FBC02D; z-index: 1; }
-        .sky-plane { position: absolute; font-size: 22px; z-index: 3; animation: fly 15s linear infinite; opacity: 0; }
-        @keyframes fly { 0% { left: -50px; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { left: 110vw; opacity: 0; } }
+        .sun { position: absolute; top: 20px; right: 20px; width: 60px; height: 60px; background: radial-gradient(circle, #fff59d, #fbc02d); border-radius: 50%; box-shadow: 0 0 40px rgba(251, 192, 45, 0.5); z-index: 1; opacity: 0.8; }
+        .sky-plane { position: absolute; font-size: 22px; z-index: 3; animation: fly 15s linear infinite; opacity: 0; filter: drop-shadow(0 0 5px white); }
+        @keyframes fly { 0% { left: -50px; opacity: 0; } 10% { opacity: 0.7; } 90% { opacity: 0.7; } 100% { left: 110vw; opacity: 0; } }
 
         /* Карточка */
         .card {
-            background: var(--glass); backdrop-filter: blur(15px);
-            border-radius: 28px; padding: 25px; width: 100%; max-width: 380px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1); z-index: 10;
+            background: var(--glass); backdrop-filter: blur(20px);
+            border-radius: 32px; padding: 25px; width: 100%; max-width: 380px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3); z-index: 10;
+            border: 1px solid rgba(255,255,255,0.2);
         }
 
-        .grid-row { display: grid; grid-template-columns: 100px 1fr; align-items: center; margin-bottom: 12px; gap: 10px; position: relative; }
-        .label { font-size: 13px; font-weight: 700; color: #546E7A; }
+        h2 { text-align: center; color: var(--blue); margin: 0 0 20px 0; font-size: 24px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
 
-        input, select { width: 100%; padding: 12px; border: 1px solid rgba(0,0,0,0.1); border-radius: 14px; font-size: 15px; outline: none; box-sizing: border-box; }
+        .grid-row { display: grid; grid-template-columns: 100px 1fr; align-items: center; margin-bottom: 12px; gap: 10px; position: relative; }
+        .label { font-size: 12px; font-weight: 700; color: #455a64; text-transform: uppercase; }
+
+        input, select { width: 100%; padding: 12px; border: 1.5px solid rgba(26, 35, 126, 0.1); border-radius: 14px; font-size: 15px; outline: none; box-sizing: border-box; background: #f8f9fa; transition: 0.3s; }
+        input:focus { border-color: var(--blue); background: #fff; }
 
         /* Выпадающий список API */
         .autocomplete-suggestions {
             position: absolute; top: 100%; left: 110px; right: 0;
-            background: white; border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            max-height: 200px; overflow-y: auto; z-index: 100; display: none; margin-top: 2px;
+            background: white; border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-height: 200px; overflow-y: auto; z-index: 100; display: none; margin-top: 5px;
+            border: 1px solid #eee;
         }
-        .suggestion { padding: 12px; cursor: pointer; border-bottom: 1px solid #f0f0f0; font-size: 14px; line-height: 1.2; }
-        .suggestion:hover { background: #e3f2fd; }
-        .suggestion div { color: #999; font-size: 11px; margin-top: 2px; }
+        .suggestion { padding: 12px; cursor: pointer; border-bottom: 1px solid #f0f0f0; font-size: 14px; line-height: 1.2; transition: 0.2s; }
+        .suggestion:hover { background: #f0f4ff; color: var(--blue); }
+        .suggestion div { color: #78909c; font-size: 11px; margin-top: 2px; }
 
-        .btn-box { position: relative; margin-top: 20px; border-radius: 15px; overflow: hidden; }
-        .btn { background: linear-gradient(90deg, #FF8E01, #FF6B00); color: white; border: none; padding: 18px; width: 100%; font-size: 16px; font-weight: 800; cursor: pointer; }
+        .btn-box { position: relative; margin-top: 20px; border-radius: 16px; overflow: hidden; box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3); }
+        .btn { background: linear-gradient(90deg, #b8860b, #d4af37); color: white; border: none; padding: 18px; width: 100%; font-size: 16px; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
+        .btn:active { transform: scale(0.98); }
+        
         .plane-anim { position: absolute; left: -60px; top: 50%; transform: translateY(-50%); font-size: 24px; transition: 1s ease-in; }
         .loading .plane-anim { left: 110%; }
         .loading span { opacity: 0; }
@@ -61,7 +70,7 @@
     <div class="sky-plane">✈️</div>
 
     <div class="card">
-        <h2 style="text-align:center; color: #0277BD; margin-top:0;">SkyBooking ✈️</h2>
+        <h2>SkyBooking ✈️</h2>
         
         <div class="grid-row">
             <div class="label">Откуда</div>
@@ -126,16 +135,13 @@
         tg.ready();
         tg.expand();
 
-        // Автозаполнение ника если он есть в ТГ
         if (tg.initDataUnsafe.user && tg.initDataUnsafe.user.username) {
             document.getElementById('telegram').value = '@' + tg.initDataUnsafe.user.username;
         }
 
-        // Функция поиска через API Travelpayouts (города и аэропорты)
         async function searchPlaces(query) {
             if (query.length < 2) return [];
             try {
-                // Запрашиваем и города (city), и аэропорты (airport)
                 const response = await fetch(`https://autocomplete.travelpayouts.com/places2?term=${query}&locale=ru&types[]=city&types[]=airport`);
                 return await response.json();
             } catch (e) {
@@ -160,8 +166,7 @@
                         results.forEach(item => {
                             const div = document.createElement('div');
                             div.className = 'suggestion';
-                            // Показываем название и код (например, DME)
-                            const typeLabel = item.type === 'airport' ? '✈️ Аэропорт ' : '';
+                            const typeLabel = item.type === 'airport' ? '✈️ ' : '';
                             div.innerHTML = `${typeLabel}${item.name} (${item.code}) <div>${item.country_name}</div>`;
                             
                             div.onclick = () => {
