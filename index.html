@@ -37,32 +37,31 @@
         /* Эффект падающих звезд */
         .star {
             position: fixed;
-            top: -5px;
+            top: -10vh;
             width: 2px;
             height: 2px;
             background: white;
             border-radius: 50%;
             box-shadow: 0 0 10px white, 0 0 20px white;
             z-index: 1;
-            animation: shoot 3s linear infinite;
+            animation: shoot 4s linear infinite;
             opacity: 0;
         }
         .star::after {
             content: '';
             position: absolute;
             top: 0;
-            left: 0;
-            width: 80px;
-            height: 1px;
-            background: linear-gradient(90deg, white, transparent);
-            transform: rotate(-45deg);
-            transform-origin: 0 0;
+            left: 50%;
+            width: 1px;
+            height: 100px;
+            background: linear-gradient(180deg, white, transparent);
+            transform: translateX(-50%);
         }
         @keyframes shoot {
-            0% { transform: translate(0, 0) rotate(45deg); opacity: 0; }
+            0% { transform: translateY(0) translateX(0); opacity: 0; }
             10% { opacity: 1; }
             90% { opacity: 1; }
-            100% { transform: translate(300px, 300px) rotate(45deg); opacity: 0; }
+            100% { transform: translateY(110vh) translateX(50px); opacity: 0; }
         }
 
         /* Карточка в стиле Glassmorphism */
@@ -215,13 +214,13 @@
         // Создание падающих звезд
         function createStars() {
             const container = document.getElementById('stars-container');
-            const starCount = 6;
+            const starCount = 8;
             for (let i = 0; i < starCount; i++) {
                 const star = document.createElement('div');
                 star.className = 'star';
                 star.style.left = Math.random() * 100 + 'vw';
-                star.style.animationDelay = Math.random() * 5 + 's';
-                star.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                star.style.animationDelay = Math.random() * 8 + 's';
+                star.style.animationDuration = (Math.random() * 3 + 2) + 's';
                 container.appendChild(star);
             }
         }
