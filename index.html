@@ -7,7 +7,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --glass: rgba(255, 255, 255, 0.8);
+            --glass: rgba(255, 255, 255, 0.85);
             --text: #2c3e50;
             --accent: #FF8E01;
         }
@@ -16,83 +16,91 @@
             margin: 0; padding: 10px;
             font-family: 'Segoe UI', sans-serif;
             background: linear-gradient(180deg, #87CEEB 0%, #E0F7FA 100%);
-            height: 100vh; overflow: hidden;
+            min-height: 100vh; overflow-x: hidden;
             display: flex; align-items: center; justify-content: center;
         }
 
-        /* Эффект живого неба */
+        /* Анимированное солнце */
         .sun {
-            position: absolute; top: 30px; right: 30px;
-            width: 80px; height: 80px;
+            position: absolute; top: 20px; right: 20px;
+            width: 60px; height: 60px;
             background: radial-gradient(circle, #FFF9C4, #FBC02D);
-            border-radius: 50%; box-shadow: 0 0 50px #FBC02D;
+            border-radius: 50%; box-shadow: 0 0 30px #FBC02D;
             animation: pulse 4s infinite alternate; z-index: 1;
         }
 
+        /* Облака */
         .cloud {
             position: absolute; background: white; border-radius: 50px;
-            opacity: 0.7; z-index: 2; animation: move linear infinite;
+            opacity: 0.6; z-index: 2; animation: move linear infinite;
         }
         .cloud::after, .cloud::before { content: ''; position: absolute; background: white; border-radius: 50%; }
-        
-        .c1 { width: 100px; height: 40px; top: 15%; animation-duration: 20s; }
-        .c2 { width: 140px; height: 50px; top: 40%; animation-duration: 35s; opacity: 0.4; }
-        .c3 { width: 80px; height: 30px; top: 70%; animation-duration: 25s; }
+        .c1 { width: 80px; height: 30px; top: 10%; animation-duration: 25s; }
+        .c2 { width: 120px; height: 40px; top: 30%; animation-duration: 40s; opacity: 0.3; }
 
-        @keyframes move { from { left: -150px; } to { left: 100vw; } }
-        @keyframes pulse { from { transform: scale(1); opacity: 0.8; } to { transform: scale(1.1); opacity: 1; } }
+        /* Летающие самолеты наверху */
+        .sky-plane {
+            position: absolute; font-size: 20px; z-index: 3;
+            filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.1));
+            animation: flyBy 15s linear infinite;
+            opacity: 0;
+        }
+        .p1 { top: 50px; animation-delay: 0s; }
+        .p2 { top: 120px; animation-delay: 7s; animation-duration: 20s; }
 
-        /* Карточка приложения */
+        @keyframes flyBy {
+            0% { left: -50px; top: inherit; opacity: 0; transform: rotate(10deg); }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { left: 110vw; top: 20px; opacity: 0; transform: rotate(-5deg); }
+        }
+
+        @keyframes move { from { left: -150px; } to { left: 110vw; } }
+        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.1); } }
+
+        /* Карточка */
         .card {
             background: var(--glass);
             backdrop-filter: blur(15px);
-            border-radius: 25px; padding: 25px;
+            border-radius: 25px; padding: 20px;
             width: 100%; max-width: 380px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             z-index: 10; border: 1px solid rgba(255,255,255,0.4);
         }
 
-        h2 { text-align: center; color: #0277BD; margin-top: 0; font-size: 22px; }
+        h2 { text-align: center; color: #0277BD; margin: 0 0 20px 0; font-size: 22px; }
 
-        /* Сетка: Колонки */
-        .row {
+        .grid-row {
             display: grid;
-            grid-template-columns: 1fr 1.5fr; /* Текст слева, поле справа */
+            grid-template-columns: 110px 1fr;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             gap: 10px;
         }
 
-        .label {
-            font-size: 14px; font-weight: 600; color: var(--text);
-        }
+        .label { font-size: 13px; font-weight: 700; color: #546E7A; }
 
         input, select {
             width: 100%; padding: 10px;
             border: 1px solid rgba(0,0,0,0.05);
             border-radius: 12px; background: white;
-            font-size: 14px; outline: none; transition: 0.3s;
+            font-size: 14px; outline: none; box-sizing: border-box;
         }
 
-        input:focus, select:focus { border-color: #0277BD; box-shadow: 0 0 10px rgba(2,119,189,0.1); }
-
-        .btn-box { position: relative; margin-top: 20px; overflow: hidden; border-radius: 15px; }
+        .btn-box { position: relative; margin-top: 20px; border-radius: 15px; overflow: hidden; }
         .btn {
-            background: linear-gradient(90deg, #FF8E01, #FFA726);
-            color: white; border: none; padding: 15px;
-            width: 100%; font-size: 16px; font-weight: bold;
-            cursor: pointer; transition: 0.3s;
+            background: linear-gradient(90deg, #FF8E01, #FF6B00);
+            color: white; border: none; padding: 16px;
+            width: 100%; font-size: 16px; font-weight: 800; cursor: pointer;
         }
-
-        .btn:active { transform: scale(0.97); }
 
         .plane-anim {
-            position: absolute; left: -50px; top: 50%;
-            transform: translateY(-50%); font-size: 20px;
-            transition: 0.8s ease-in; opacity: 0;
+            position: absolute; left: -60px; top: 50%;
+            transform: translateY(-50%); font-size: 24px;
+            transition: 1s ease-in;
         }
 
-        .loading .plane-anim { left: 105%; opacity: 1; }
+        .loading .plane-anim { left: 110%; }
         .loading span { opacity: 0; }
     </style>
 </head>
@@ -101,51 +109,53 @@
     <div class="sun"></div>
     <div class="cloud c1"></div>
     <div class="cloud c2"></div>
-    <div class="cloud c3"></div>
+    
+    <div class="sky-plane p1">✈️</div>
+    <div class="sky-plane p2">🛩️</div>
 
     <div class="card">
         <h2>SkyBooking ✈️</h2>
         
-        <div class="row">
+        <div class="grid-row">
             <div class="label">Откуда</div>
             <input type="text" id="origin" placeholder="Город вылета">
         </div>
 
-        <div class="row">
+        <div class="grid-row">
             <div class="label">Куда</div>
             <input type="text" id="destination" placeholder="Город прилета">
         </div>
 
-        <div class="row">
+        <div class="grid-row">
             <div class="label">Дата</div>
             <input type="date" id="date">
         </div>
 
-        <div class="row">
-            <div class="label">Пассажиры</div>
-            <select id="passengers">
-                <option value="1">1 человек</option>
-                <option value="2">2 человека</option>
-                <option value="3">3 человека</option>
-                <option value="4+">4+ человека</option>
-            </select>
-        </div>
-
-        <div class="row">
+        <div class="grid-row">
             <div class="label">Класс</div>
             <select id="class">
                 <option value="Эконом">Эконом</option>
-                <option value="Стандарт">Стандарт</option>
                 <option value="Бизнес">Бизнес</option>
+                <option value="Первый">Первый класс</option>
             </select>
         </div>
 
-        <div class="row">
+        <div class="grid-row">
             <div class="label">Багаж</div>
             <select id="baggage">
-                <option value="Нужен">Нужен</option>
-                <option value="Не нужен">Не нужен</option>
+                <option value="Нужен">Нужен ✅</option>
+                <option value="Не нужен">Не нужен ❌</option>
             </select>
+        </div>
+
+        <div class="grid-row">
+            <div class="label">Телефон</div>
+            <input type="tel" id="phone" value="+7" placeholder="+7 (___) ___ __ __">
+        </div>
+
+        <div class="grid-row">
+            <div class="label">Telegram</div>
+            <input type="text" id="telegram" placeholder="@username">
         </div>
 
         <div class="btn-box" id="btnBox">
@@ -163,26 +173,29 @@
 
         document.getElementById('date').valueAsDate = new Date();
 
+        // Автозаполнение ника если есть
+        if(tg.initDataUnsafe.user && tg.initDataUnsafe.user.username) {
+            document.getElementById('telegram').value = '@' + tg.initDataUnsafe.user.username;
+        }
+
         function sendOrder() {
             const data = {
                 from: document.getElementById('origin').value,
                 to: document.getElementById('destination').value,
                 date: document.getElementById('date').value,
-                passengers: document.getElementById('passengers').value,
                 class: document.getElementById('class').value,
-                baggage: document.getElementById('baggage').value
+                baggage: document.getElementById('baggage').value,
+                phone: document.getElementById('phone').value,
+                telegram: document.getElementById('telegram').value
             };
 
-            if (!data.from || !data.to) {
-                tg.showAlert("Заполните города!");
+            if (!data.from || !data.to || data.phone.length < 10) {
+                tg.showAlert("Заполните города и корректный номер телефона!");
                 return;
             }
 
             document.getElementById('btnBox').classList.add('loading');
-            
-            setTimeout(() => {
-                tg.sendData(JSON.stringify(data));
-            }, 1000);
+            setTimeout(() => { tg.sendData(JSON.stringify(data)); }, 1000);
         }
     </script>
 </body>
