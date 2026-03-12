@@ -40,7 +40,12 @@
         .grid-row { display: grid; grid-template-columns: 100px 1fr; align-items: center; margin-bottom: 12px; gap: 10px; position: relative; }
         .label { font-size: 12px; font-weight: 700; color: #455a64; text-transform: uppercase; }
 
-        input, select { width: 100%; padding: 12px; border: 1.5px solid rgba(26, 35, 126, 0.1); border-radius: 14px; font-size: 15px; outline: none; box-sizing: border-box; background: #f8f9fa; transition: 0.3s; }
+        input, select { 
+            width: 100%; padding: 12px; border: 1.5px solid rgba(26, 35, 126, 0.1); 
+            border-radius: 14px; font-size: 15px; outline: none; box-sizing: border-box; 
+            background: #f8f9fa; transition: 0.3s;
+            caret-color: var(--blue); /* Делаем курсор видимым */
+        }
         input:focus { border-color: var(--blue); background: #fff; }
 
         /* Выпадающий список API */
@@ -114,7 +119,7 @@
 
         <div class="grid-row">
             <div class="label">Телефон</div>
-            <input type="tel" id="phone" value="+7">
+            <input type="tel" id="phone" value="+7" maxlength="12">
         </div>
 
         <div class="grid-row">
@@ -138,6 +143,21 @@
         if (tg.initDataUnsafe.user && tg.initDataUnsafe.user.username) {
             document.getElementById('telegram').value = '@' + tg.initDataUnsafe.user.username;
         }
+
+        // Логика для телефона
+        const phoneInput = document.getElementById('phone');
+        phoneInput.addEventListener('input', function(e) {
+            if (!this.value.startsWith('+7')) {
+                this.value = '+7';
+            }
+            this.value = this.value.replace(/[^\d+]/g, ''); // Только цифры и плюс
+        });
+
+        phoneInput.addEventListener('click', function() {
+            if (this.value === '+7') {
+                this.setSelectionRange(2, 2);
+            }
+        });
 
         async function searchPlaces(query) {
             if (query.length < 2) return [];
@@ -203,8 +223,8 @@
                 telegram: document.getElementById('telegram').value
             };
 
-            if (!data.from || !data.to || data.phone.length < 5) { 
-                tg.showAlert("Заполните все поля корректно!"); 
+            if (!data.from || !data.to || data.phone.length < 12) { 
+                tg.showAlert("Заполните все поля корректно (номер должен быть полным)!"); 
                 return; 
             }
 
