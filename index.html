@@ -19,7 +19,8 @@
             font-family: 'Segoe UI', Roboto, sans-serif;
             background: var(--bg-night);
             min-height: 100vh; display: flex; align-items: center; justify-content: center;
-            overflow: hidden;
+            /* Изменено для включения прокрутки */
+            overflow-y: auto;
             color: white;
             transition: background 5s ease-in-out;
             animation: skyCycle 25s infinite linear;
@@ -105,6 +106,7 @@
             border: 1px solid rgba(255, 255, 255, 0.15);
             box-sizing: border-box;
             transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            margin: 20px 0; /* Добавлен отступ для комфортной прокрутки */
         }
 
         /* Анимация закрытия */
@@ -140,7 +142,6 @@
             box-shadow: 0 15px 35px rgba(0,0,0,0.4);
             max-height: 180px; overflow-y: auto; z-index: 100; margin-top: 8px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            /* Плавность появления */
             opacity: 0; pointer-events: none; transform: translateY(-10px);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -167,7 +168,6 @@
         .loading .plane-anim { left: 110%; }
         .loading span { opacity: 0; }
 
-        /* Живые подсказки */
         .live-hint {
             text-align: center; font-size: 11px; color: rgba(255,255,255,0.5);
             margin-top: 15px; min-height: 14px; font-style: italic;
@@ -261,7 +261,6 @@
         tg.ready();
         tg.expand();
 
-        // Живые подсказки
         const hints = [
             "Сейчас этот рейс смотрят {n} человека",
             "Осталось 3 билета по этой цене",
@@ -273,7 +272,7 @@
         function updateHint() {
             const hintEl = document.getElementById('liveHint');
             const randomHint = hints[Math.floor(Math.random() * hints.length)];
-            const n = Math.floor(Math.random() * 4) + 2; // от 2 до 5 чел
+            const n = Math.floor(Math.random() * 4) + 2; 
             hintEl.innerText = randomHint.replace('{n}', n);
         }
         setInterval(updateHint, 6000);
@@ -297,7 +296,6 @@
             document.getElementById('telegram').value = '@' + tg.initDataUnsafe.user.username;
         }
 
-        // Маска телефона
         const phoneInput = document.getElementById('phone');
         phoneInput.addEventListener('input', function(e) {
             let x = this.value.replace(/\D/g, '').match(/(\d{0,1})(\d{0,3})(\d{0,3})(\d{0,2})(\d{0,2})/);
