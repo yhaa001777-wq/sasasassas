@@ -12,7 +12,6 @@
             --accent: #ffb347; /* Песочное золото */
             --gold-grad: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
             --bg-night: linear-gradient(180deg, #2c3e50 0%, #000000 100%);
-            --bg-day: linear-gradient(180deg, #4facfe 0%, #00f2fe 100%);
         }
 
         body {
@@ -28,10 +27,10 @@
 
         @keyframes skyCycle {
             0%, 100% { background: #000000; }
-            40%, 60% { background: #4facfe; }
+            40%, 60% { background: #1a5276; } /* Более спокойный, не слишком светлый синий */
         }
 
-        /* Орбита светил */
+        /* Орбита светил с замутнением */
         .orbit {
             position: fixed; top: 50%; left: 50%;
             width: 120vw; height: 120vw;
@@ -40,9 +39,11 @@
             z-index: 0;
             animation: rotateOrbit 25s infinite linear;
             pointer-events: none;
+            filter: blur(35px); /* Замутнение эмодзи */
+            opacity: 0.8;
         }
-        .sun { position: absolute; top: 0; left: 50%; transform: translateX(-50%); font-size: 50px; filter: drop-shadow(0 0 20px yellow); }
-        .moon { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); font-size: 40px; filter: drop-shadow(0 0 15px white); }
+        .sun { position: absolute; top: 0; left: 50%; transform: translateX(-50%); font-size: 80px; filter: drop-shadow(0 0 40px orange); }
+        .moon { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); font-size: 70px; filter: drop-shadow(0 0 30px white); }
 
         @keyframes rotateOrbit {
             from { transform: rotate(0deg); }
