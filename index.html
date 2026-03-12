@@ -7,13 +7,11 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --glass: rgba(30, 33, 37, 0.98);
-            --blue: #00e5ff; /* Неоновый бирюзовый */
-            --accent: #ffffff; /* Белый/серебро */
-            --bg-top: #121417; /* Глубокий темный */
-            --bg-bottom: #1c1f24;
-            --text-main: #e0e0e0;
-            --text-label: #90a4ae;
+            --glass: rgba(255, 255, 255, 0.95);
+            --blue: #1a237e; /* Глубокий синий */
+            --accent: #d4af37; /* Золотой акцент */
+            --bg-top: #0f2027; /* Темный градиент */
+            --bg-bottom: #2c5364;
         }
 
         body {
@@ -22,62 +20,53 @@
             background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
             min-height: 100vh; display: flex; align-items: center; justify-content: center;
             overflow-x: hidden;
-            color: var(--text-main);
         }
 
         /* Анимации неба */
-        .sun { position: absolute; top: 20px; right: 20px; width: 60px; height: 60px; background: radial-gradient(circle, #455a64, #263238); border-radius: 50%; box-shadow: 0 0 40px rgba(0, 229, 255, 0.2); z-index: 1; opacity: 0.6; }
-        .sky-plane { position: absolute; font-size: 22px; z-index: 3; animation: fly 15s linear infinite; opacity: 0; filter: drop-shadow(0 0 5px var(--blue)); }
+        .sun { position: absolute; top: 20px; right: 20px; width: 60px; height: 60px; background: radial-gradient(circle, #fff59d, #fbc02d); border-radius: 50%; box-shadow: 0 0 40px rgba(251, 192, 45, 0.5); z-index: 1; opacity: 0.8; }
+        .sky-plane { position: absolute; font-size: 22px; z-index: 3; animation: fly 15s linear infinite; opacity: 0; filter: drop-shadow(0 0 5px white); }
         @keyframes fly { 0% { left: -50px; opacity: 0; } 10% { opacity: 0.7; } 90% { opacity: 0.7; } 100% { left: 110vw; opacity: 0; } }
 
         /* Карточка */
         .card {
             background: var(--glass); backdrop-filter: blur(20px);
             border-radius: 32px; padding: 25px; width: 100%; max-width: 380px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5); z-index: 10;
-            border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3); z-index: 10;
+            border: 1px solid rgba(255,255,255,0.2);
         }
 
-        h2 { text-align: center; color: var(--blue); margin: 0 0 20px 0; font-size: 24px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 0 10px rgba(0, 229, 255, 0.3); }
+        h2 { text-align: center; color: var(--blue); margin: 0 0 20px 0; font-size: 24px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
 
         .grid-row { display: grid; grid-template-columns: 100px 1fr; align-items: center; margin-bottom: 12px; gap: 10px; position: relative; }
-        .label { font-size: 11px; font-weight: 700; color: var(--text-label); text-transform: uppercase; letter-spacing: 0.5px; }
+        .label { font-size: 12px; font-weight: 700; color: #455a64; text-transform: uppercase; }
 
         input, select { 
-            width: 100%; padding: 12px; border: 1.5px solid rgba(255, 255, 255, 0.05); 
+            width: 100%; padding: 12px; border: 1.5px solid rgba(26, 35, 126, 0.1); 
             border-radius: 14px; font-size: 15px; outline: none; box-sizing: border-box; 
-            background: rgba(255, 255, 255, 0.03); transition: 0.3s;
-            color: white;
+            background: #f8f9fa; transition: 0.3s;
             caret-color: var(--blue); /* Делаем курсор видимым */
         }
-        input:focus { border-color: var(--blue); background: rgba(255, 255, 255, 0.07); }
-        select option { background: #1c1f24; color: white; }
+        input:focus { border-color: var(--blue); background: #fff; }
 
         /* Выпадающий список API */
         .autocomplete-suggestions {
             position: absolute; top: 100%; left: 110px; right: 0;
-            background: #25292e; border-radius: 14px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            background: white; border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             max-height: 200px; overflow-y: auto; z-index: 100; display: none; margin-top: 5px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid #eee;
         }
-        .suggestion { padding: 12px; cursor: pointer; border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 14px; line-height: 1.2; transition: 0.2s; color: white; }
-        .suggestion:hover { background: rgba(0, 229, 255, 0.1); color: var(--blue); }
-        .suggestion div { color: var(--text-label); font-size: 11px; margin-top: 2px; }
+        .suggestion { padding: 12px; cursor: pointer; border-bottom: 1px solid #f0f0f0; font-size: 14px; line-height: 1.2; transition: 0.2s; }
+        .suggestion:hover { background: #f0f4ff; color: var(--blue); }
+        .suggestion div { color: #78909c; font-size: 11px; margin-top: 2px; }
 
-        .btn-box { position: relative; margin-top: 20px; border-radius: 16px; overflow: hidden; box-shadow: 0 5px 20px rgba(0, 229, 255, 0.2); }
-        .btn { background: linear-gradient(90deg, #0097a7, #00e5ff); color: #000; border: none; padding: 18px; width: 100%; font-size: 16px; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
-        .btn:active { transform: scale(0.98); filter: brightness(1.2); }
+        .btn-box { position: relative; margin-top: 20px; border-radius: 16px; overflow: hidden; box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3); }
+        .btn { background: linear-gradient(90deg, #b8860b, #d4af37); color: white; border: none; padding: 18px; width: 100%; font-size: 16px; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
+        .btn:active { transform: scale(0.98); }
         
         .plane-anim { position: absolute; left: -60px; top: 50%; transform: translateY(-50%); font-size: 24px; transition: 1s ease-in; }
         .loading .plane-anim { left: 110%; }
         .loading span { opacity: 0; }
-
-        /* Кастомизация календаря для темной темы */
-        input[type="date"]::-webkit-calendar-picker-indicator {
-            filter: invert(1);
-            opacity: 0.7;
-        }
     </style>
 </head>
 <body>
