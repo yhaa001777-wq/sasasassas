@@ -3,181 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SkyBooking</title>
+    <title>SkyBooking Premium</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* Основные стили и фон */
+        :root {
+            --glass: rgba(255, 255, 255, 0.8);
+            --text: #2c3e50;
+            --accent: #FF8E01;
+        }
+
         body {
-            margin: 0; padding: 15px;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: linear-gradient(180deg, #b3e5fc 0%, #e1f5fe 100%);
-            overflow: hidden; /* Чтобы облака не выходили за пределы */
-            position: relative;
-            color: #333;
+            margin: 0; padding: 10px;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(180deg, #87CEEB 0%, #E0F7FA 100%);
+            height: 100vh; overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
         }
 
-        /* Анимированные облака на фоне */
+        /* Эффект живого неба */
+        .sun {
+            position: absolute; top: 30px; right: 30px;
+            width: 80px; height: 80px;
+            background: radial-gradient(circle, #FFF9C4, #FBC02D);
+            border-radius: 50%; box-shadow: 0 0 50px #FBC02D;
+            animation: pulse 4s infinite alternate; z-index: 1;
+        }
+
         .cloud {
-            position: absolute;
-            background: #fff;
-            border-radius: 100px;
-            opacity: 0.8;
-            z-index: 1;
+            position: absolute; background: white; border-radius: 50px;
+            opacity: 0.7; z-index: 2; animation: move linear infinite;
         }
-        .cloud::after, .cloud::before {
-            content: ''; position: absolute; background: #fff; border-radius: 100px;
-        }
+        .cloud::after, .cloud::before { content: ''; position: absolute; background: white; border-radius: 50%; }
         
-        /* Разные типы облаков */
-        .cloud-1 { width: 100px; height: 40px; top: 10%; left: -120px; animation: moveClouds 25s infinite linear; }
-        .cloud-1::after { width: 50px; height: 50px; top: -25px; left: 15px; }
-        .cloud-1::before { width: 40px; height: 40px; top: -20px; right: 15px; }
+        .c1 { width: 100px; height: 40px; top: 15%; animation-duration: 20s; }
+        .c2 { width: 140px; height: 50px; top: 40%; animation-duration: 35s; opacity: 0.4; }
+        .c3 { width: 80px; height: 30px; top: 70%; animation-duration: 25s; }
 
-        .cloud-2 { width: 150px; height: 60px; top: 40%; left: -180px; animation: moveClouds 35s infinite linear 5s; opacity: 0.5; }
-        .cloud-2::after { width: 80px; height: 80px; top: -40px; left: 20px; }
-        .cloud-2::before { width: 60px; height: 60px; top: -30px; right: 20px; }
+        @keyframes move { from { left: -150px; } to { left: 100vw; } }
+        @keyframes pulse { from { transform: scale(1); opacity: 0.8; } to { transform: scale(1.1); opacity: 1; } }
 
-        @keyframes moveClouds {
-            0% { left: -200px; }
-            100% { left: 100vw; }
-        }
-
-        /* Карточка формы */
-        .booking-card {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 24px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            position: relative;
-            z-index: 10;
-            backdrop-filter: blur(5px); /* Легкое размытие фона */
+        /* Карточка приложения */
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border-radius: 25px; padding: 25px;
+            width: 100%; max-width: 380px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            z-index: 10; border: 1px solid rgba(255,255,255,0.4);
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 25px;
-            color: #0085FF;
-            font-size: 20px;
-            font-weight: bold;
+        h2 { text-align: center; color: #0277BD; margin-top: 0; font-size: 22px; }
+
+        /* Сетка: Колонки */
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr; /* Текст слева, поле справа */
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 10px;
         }
 
-        /* Стили полей ввода */
-        .input-group { margin-bottom: 18px; }
-        .input-group label {
-            display: block; font-size: 11px; font-weight: bold;
-            color: #adb5bd; margin-bottom: 6px; text-transform: uppercase;
-        }
-        .input-group input, .input-group select {
-            width: 100%; padding: 14px;
-            border: 1px solid #f1f3f5; border-radius: 14px;
-            font-size: 16px; box-sizing: border-box;
-            background: #f8f9fa; outline: none;
-            transition: 0.3s;
-        }
-        .input-group input:focus {
-            border-color: #0085FF;
-            background: #fff;
-            box-shadow: 0 0 0 4px rgba(0, 133, 255, 0.1);
+        .label {
+            font-size: 14px; font-weight: 600; color: var(--text);
         }
 
-        /* Анимированная кнопка отправки */
-        .submit-btn {
-            background: linear-gradient(90deg, #FF8E01 0%, #FFAC33 100%);
-            color: white; border: none;
-            padding: 18px; width: 100%;
-            border-radius: 14px; font-size: 16px; font-weight: bold;
-            cursor: pointer; transition: 0.2s;
-            position: relative; overflow: hidden;
-            box-shadow: 0 5px 15px rgba(255, 142, 1, 0.3);
+        input, select {
+            width: 100%; padding: 10px;
+            border: 1px solid rgba(0,0,0,0.05);
+            border-radius: 12px; background: white;
+            font-size: 14px; outline: none; transition: 0.3s;
         }
-        .submit-btn:active { transform: scale(0.98); }
-        
-        /* Эффект самолета при клике */
-        .submit-btn .plane {
-            position: absolute; top: 50%; left: -50px;
-            transform: translateY(-50%) rotate(0deg);
-            font-size: 20px; opacity: 0;
-            transition: 0.5s ease-in-out;
-        }
-        .submit-btn.loading .plane {
-            left: 90%; opacity: 1; transform: translateY(-50%) rotate(-45deg);
-        }
-        .submit-btn.loading span:not(.plane) { opacity: 0.2; }
 
+        input:focus, select:focus { border-color: #0277BD; box-shadow: 0 0 10px rgba(2,119,189,0.1); }
+
+        .btn-box { position: relative; margin-top: 20px; overflow: hidden; border-radius: 15px; }
+        .btn {
+            background: linear-gradient(90deg, #FF8E01, #FFA726);
+            color: white; border: none; padding: 15px;
+            width: 100%; font-size: 16px; font-weight: bold;
+            cursor: pointer; transition: 0.3s;
+        }
+
+        .btn:active { transform: scale(0.97); }
+
+        .plane-anim {
+            position: absolute; left: -50px; top: 50%;
+            transform: translateY(-50%); font-size: 20px;
+            transition: 0.8s ease-in; opacity: 0;
+        }
+
+        .loading .plane-anim { left: 105%; opacity: 1; }
+        .loading span { opacity: 0; }
     </style>
 </head>
 <body>
 
-    <div class="cloud cloud-1"></div>
-    <div class="cloud cloud-2"></div>
+    <div class="sun"></div>
+    <div class="cloud c1"></div>
+    <div class="cloud c2"></div>
+    <div class="cloud c3"></div>
 
-    <div class="booking-card">
-        <div class="header">SkyBooking ✈️</div>
+    <div class="card">
+        <h2>SkyBooking ✈️</h2>
         
-        <div class="input-group">
-            <label>Откуда (напр. Москва)</label>
-            <input type="text" id="origin" placeholder="Город отправления" autocomplete="off">
+        <div class="row">
+            <div class="label">Откуда</div>
+            <input type="text" id="origin" placeholder="Город вылета">
         </div>
 
-        <div class="input-group">
-            <label>Куда (напр. Дубай)</label>
-            <input type="text" id="destination" placeholder="Город прибытия" autocomplete="off">
+        <div class="row">
+            <div class="label">Куда</div>
+            <input type="text" id="destination" placeholder="Город прилета">
         </div>
 
-        <div style="display: flex; gap: 10px;">
-            <div class="input-group" style="flex: 2;">
-                <label>Дата</label>
-                <input type="date" id="date">
-            </div>
-            <div class="input-group" style="flex: 1;">
-                <label>Пассажиров</label>
-                <select id="passengers">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4+">4+</option>
-                </select>
-            </div>
+        <div class="row">
+            <div class="label">Дата</div>
+            <input type="date" id="date">
         </div>
 
-        <button class="submit-btn" id="submitBtn" onclick="sendOrder()">
-            <span>Оставить заявку</span>
-            <span class="plane">✈️</span>
-        </button>
+        <div class="row">
+            <div class="label">Пассажиры</div>
+            <select id="passengers">
+                <option value="1">1 человек</option>
+                <option value="2">2 человека</option>
+                <option value="3">3 человека</option>
+                <option value="4+">4+ человека</option>
+            </select>
+        </div>
+
+        <div class="row">
+            <div class="label">Класс</div>
+            <select id="class">
+                <option value="Эконом">Эконом</option>
+                <option value="Стандарт">Стандарт</option>
+                <option value="Бизнес">Бизнес</option>
+            </select>
+        </div>
+
+        <div class="row">
+            <div class="label">Багаж</div>
+            <select id="baggage">
+                <option value="Нужен">Нужен</option>
+                <option value="Не нужен">Не нужен</option>
+            </select>
+        </div>
+
+        <div class="btn-box" id="btnBox">
+            <button class="btn" onclick="sendOrder()">
+                <span>Оставить заявку</span>
+                <span class="plane-anim">✈️</span>
+            </button>
+        </div>
     </div>
 
-<script>
-    const tg = window.Telegram.WebApp;
-    tg.ready();
-    tg.expand(); // Расширяем на весь экран
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
 
-    // Устанавливаем сегодняшнюю дату по умолчанию
-    document.getElementById('date').valueAsDate = new Date();
+        document.getElementById('date').valueAsDate = new Date();
 
-    function sendOrder() {
-        const order = {
-            from: document.getElementById('origin').value,
-            to: document.getElementById('destination').value,
-            date: document.getElementById('date').value,
-            passengers: document.getElementById('passengers').value
-        };
+        function sendOrder() {
+            const data = {
+                from: document.getElementById('origin').value,
+                to: document.getElementById('destination').value,
+                date: document.getElementById('date').value,
+                passengers: document.getElementById('passengers').value,
+                class: document.getElementById('class').value,
+                baggage: document.getElementById('baggage').value
+            };
 
-        if (!order.from || !order.to || !order.date) {
-            tg.showAlert("Пожалуйста, заполните все поля");
-            return;
+            if (!data.from || !data.to) {
+                tg.showAlert("Заполните города!");
+                return;
+            }
+
+            document.getElementById('btnBox').classList.add('loading');
+            
+            setTimeout(() => {
+                tg.sendData(JSON.stringify(data));
+            }, 1000);
         }
-
-        // Включаем анимацию самолета на кнопке
-        const btn = document.getElementById('submitBtn');
-        btn.classList.add('loading');
-        btn.disabled = true;
-
-        // Отправляем данные боту и закрываем приложение через секунду
-        setTimeout(() => {
-            tg.sendData(JSON.stringify(order));
-        }, 1200);
-    }
-</script>
-
+    </script>
 </body>
 </html>
