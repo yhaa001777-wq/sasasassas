@@ -11,19 +11,68 @@
             --glass-text: #ffffff;
             --accent: #ffb347; /* Песочное золото */
             --gold-grad: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
-            --bg-sunset: linear-gradient(180deg, #2c3e50 0%, #000000 100%);
+            --bg-night: linear-gradient(180deg, #2c3e50 0%, #000000 100%);
+            --bg-day: linear-gradient(180deg, #4facfe 0%, #00f2fe 100%);
         }
 
         body {
             margin: 0; padding: 15px;
             font-family: 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg-sunset);
+            background: var(--bg-night);
             min-height: 100vh; display: flex; align-items: center; justify-content: center;
-            overflow-x: hidden;
+            overflow: hidden;
             color: white;
+            transition: background 5s ease-in-out;
+            animation: skyCycle 25s infinite linear;
         }
 
-        /* Фоновые эффекты закатного неба */
+        @keyframes skyCycle {
+            0%, 100% { background: #000000; }
+            40%, 60% { background: #4facfe; }
+        }
+
+        /* Орбита светил */
+        .orbit {
+            position: fixed; top: 50%; left: 50%;
+            width: 120vw; height: 120vw;
+            margin-left: -60vw; margin-top: -30vw;
+            border-radius: 50%;
+            z-index: 0;
+            animation: rotateOrbit 25s infinite linear;
+            pointer-events: none;
+        }
+        .sun { position: absolute; top: 0; left: 50%; transform: translateX(-50%); font-size: 50px; filter: drop-shadow(0 0 20px yellow); }
+        .moon { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); font-size: 40px; filter: drop-shadow(0 0 15px white); }
+
+        @keyframes rotateOrbit {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Падающие звезды (только ночью) */
+        .star {
+            position: fixed; top: -10vh; width: 2px; height: 2px;
+            background: white; border-radius: 50%;
+            box-shadow: 0 0 10px white; z-index: 1;
+            animation: shoot 4s linear infinite, starFade 25s infinite linear;
+        }
+        .star::after {
+            content: ''; position: absolute; top: 0; left: 50%;
+            width: 1px; height: 80px;
+            background: linear-gradient(180deg, white, transparent);
+            transform: translateX(-50%);
+        }
+        @keyframes shoot {
+            0% { transform: translateY(0) translateX(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(110vh) translateX(50px); opacity: 0; }
+        }
+        @keyframes starFade {
+            0%, 20%, 80%, 100% { opacity: 1; }
+            40%, 60% { opacity: 0; }
+        }
+
         .glow {
             position: fixed; top: 0; left: 50%; transform: translateX(-50%);
             width: 100%; height: 300px;
@@ -34,7 +83,6 @@
         .sky-plane { position: absolute; font-size: 22px; z-index: 3; animation: fly 15s linear infinite; opacity: 0.5; filter: drop-shadow(0 0 10px var(--accent)); }
         @keyframes fly { 0% { left: -50px; opacity: 0; } 10% { opacity: 0.4; } 90% { opacity: 0.4; } 100% { left: 110vw; opacity: 0; } }
 
-        /* Карточка в стиле Glassmorphism */
         .card {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(25px);
@@ -55,11 +103,9 @@
             text-transform: uppercase; letter-spacing: 2px; 
         }
 
-        /* Новое расположение полей в сетке */
         .input-group { margin-bottom: 18px; position: relative; }
         .row { display: flex; gap: 10px; margin-bottom: 18px; }
         .row > div { flex: 1; }
-
         .label { font-size: 10px; font-weight: 700; color: var(--accent); text-transform: uppercase; margin-bottom: 6px; padding-left: 5px; opacity: 0.9; }
 
         input, select { 
@@ -71,7 +117,6 @@
         input:focus { border-color: var(--accent); background: rgba(255, 255, 255, 0.15); }
         option { background: #2c3e50; color: white; }
 
-        /* Автодополнение */
         .autocomplete-suggestions {
             position: absolute; top: 100%; left: 0; right: 0;
             background: rgba(44, 62, 80, 0.95); border-radius: 14px;
@@ -83,7 +128,6 @@
         .suggestion:hover { background: rgba(255, 179, 71, 0.2); }
         .suggestion div { color: #aaa; font-size: 11px; }
 
-        /* Кнопка "Оставить заявку" */
         .btn-box { position: relative; margin-top: 30px; border-radius: 18px; overflow: hidden; }
         .btn { 
             background: var(--gold-grad); 
@@ -102,8 +146,14 @@
 </head>
 <body>
 
+    <div class="orbit">
+        <div class="sun">☀️</div>
+        <div class="moon">🌙</div>
+    </div>
+
     <div class="glow"></div>
     <div class="sky-plane">✈️</div>
+    <div id="stars-container"></div>
 
     <div class="card">
         <h2>KupiAvia ✈️</h2>
@@ -179,7 +229,18 @@
         tg.ready();
         tg.expand();
 
-        // Установка темы Telegram (золотой акцент)
+        function createStars() {
+            const container = document.getElementById('stars-container');
+            for (let i = 0; i < 6; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + 'vw';
+                star.style.animationDelay = Math.random() * 5 + 's, 0s';
+                container.appendChild(star);
+            }
+        }
+        createStars();
+
         tg.setHeaderColor('#2c3e50');
 
         if (tg.initDataUnsafe.user && tg.initDataUnsafe.user.username) {
@@ -204,7 +265,6 @@
             const input = document.getElementById(inputId);
             const list = document.getElementById(suggestionsId);
             let timeout;
-
             input.addEventListener('input', () => {
                 clearTimeout(timeout);
                 timeout = setTimeout(async () => {
@@ -232,7 +292,6 @@
 
         setupAutocomplete('origin', 'origin-suggestions');
         setupAutocomplete('destination', 'destination-suggestions');
-
         document.getElementById('date').valueAsDate = new Date();
 
         function sendOrder() {
@@ -246,12 +305,10 @@
                 phone: document.getElementById('phone').value,
                 telegram: document.getElementById('telegram').value
             };
-
             if (!data.from || !data.to || data.phone.length < 12) { 
                 tg.showAlert("Пожалуйста, укажите маршрут и полный номер телефона!"); 
                 return; 
             }
-
             document.getElementById('btnBox').classList.add('loading');
             setTimeout(() => { tg.sendData(JSON.stringify(data)); }, 1200);
         }
