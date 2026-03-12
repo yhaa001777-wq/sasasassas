@@ -34,6 +34,37 @@
         .sky-plane { position: absolute; font-size: 22px; z-index: 3; animation: fly 15s linear infinite; opacity: 0.5; filter: drop-shadow(0 0 10px var(--accent)); }
         @keyframes fly { 0% { left: -50px; opacity: 0; } 10% { opacity: 0.4; } 90% { opacity: 0.4; } 100% { left: 110vw; opacity: 0; } }
 
+        /* Эффект падающих звезд */
+        .star {
+            position: fixed;
+            top: -5px;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 10px white, 0 0 20px white;
+            z-index: 1;
+            animation: shoot 3s linear infinite;
+            opacity: 0;
+        }
+        .star::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 80px;
+            height: 1px;
+            background: linear-gradient(90deg, white, transparent);
+            transform: rotate(-45deg);
+            transform-origin: 0 0;
+        }
+        @keyframes shoot {
+            0% { transform: translate(0, 0) rotate(45deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translate(300px, 300px) rotate(45deg); opacity: 0; }
+        }
+
         /* Карточка в стиле Glassmorphism */
         .card {
             background: rgba(255, 255, 255, 0.1);
@@ -104,6 +135,8 @@
 
     <div class="glow"></div>
     <div class="sky-plane">✈️</div>
+
+    <div id="stars-container"></div>
 
     <div class="card">
         <h2>KupiAvia ✈️</h2>
@@ -179,7 +212,21 @@
         tg.ready();
         tg.expand();
 
-        // Установка темы Telegram (золотой акцент)
+        // Создание падающих звезд
+        function createStars() {
+            const container = document.getElementById('stars-container');
+            const starCount = 6;
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + 'vw';
+                star.style.animationDelay = Math.random() * 5 + 's';
+                star.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                container.appendChild(star);
+            }
+        }
+        createStars();
+
         tg.setHeaderColor('#2c3e50');
 
         if (tg.initDataUnsafe.user && tg.initDataUnsafe.user.username) {
