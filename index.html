@@ -27,10 +27,22 @@
 
         @keyframes skyCycle {
             0%, 100% { background: #000000; }
-            40%, 60% { background: #1a5276; } /* Более спокойный, не слишком светлый синий */
+            40%, 60% { background: #1a5276; }
         }
 
-        /* Орбита светил с замутнением */
+        /* Северное сияние */
+        .aurora {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% -20%, rgba(0, 255, 150, 0.15), transparent 70%),
+                        radial-gradient(circle at 20% -10%, rgba(150, 0, 255, 0.1), transparent 60%);
+            filter: blur(60px); opacity: 0; z-index: 0; pointer-events: none;
+            animation: auroraFade 25s infinite linear;
+        }
+        @keyframes auroraFade {
+            0%, 20%, 80%, 100% { opacity: 0; }
+            45%, 55% { opacity: 1; }
+        }
+
         .orbit {
             position: fixed; top: 50%; left: 50%;
             width: 120vw; height: 120vw;
@@ -39,7 +51,7 @@
             z-index: 0;
             animation: rotateOrbit 25s infinite linear;
             pointer-events: none;
-            filter: blur(35px); /* Замутнение эмодзи */
+            filter: blur(35px);
             opacity: 0.8;
         }
         .sun { position: absolute; top: 0; left: 50%; transform: translateX(-50%); font-size: 80px; filter: drop-shadow(0 0 40px orange); }
@@ -50,7 +62,6 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Падающие звезды (только ночью) */
         .star {
             position: fixed; top: -10vh; width: 2px; height: 2px;
             background: white; border-radius: 50%;
@@ -93,7 +104,12 @@
             z-index: 10;
             border: 1px solid rgba(255, 255, 255, 0.15);
             box-sizing: border-box;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
+        /* Анимация закрытия */
+        .closing-app .card { transform: scale(0.1) translateY(-500px); opacity: 0; }
+        .closing-app { background: black !important; }
 
         h2 { 
             text-align: center; 
@@ -129,7 +145,7 @@
         .suggestion:hover { background: rgba(255, 179, 71, 0.2); }
         .suggestion div { color: #aaa; font-size: 11px; }
 
-        .btn-box { position: relative; margin-top: 30px; border-radius: 18px; overflow: hidden; }
+        .btn-box { position: relative; margin-top: 20px; border-radius: 18px; overflow: hidden; }
         .btn { 
             background: var(--gold-grad); 
             color: #000; border: none; padding: 18px; width: 100%; 
@@ -143,10 +159,17 @@
         .plane-anim { position: absolute; left: -60px; top: 50%; transform: translateY(-50%); font-size: 24px; transition: 1.2s cubic-bezier(0.4, 0, 0.2, 1); }
         .loading .plane-anim { left: 110%; }
         .loading span { opacity: 0; }
+
+        /* Живые подсказки */
+        .live-hint {
+            text-align: center; font-size: 11px; color: rgba(255,255,255,0.5);
+            margin-top: 15px; min-height: 14px; font-style: italic;
+        }
     </style>
 </head>
 <body>
 
+    <div class="aurora"></div>
     <div class="orbit">
         <div class="sun">☀️</div>
         <div class="moon">🌙</div>
@@ -162,12 +185,12 @@
         <div class="row">
             <div class="input-group">
                 <div class="label">Откуда</div>
-                <input type="text" id="origin" placeholder="Город" autocomplete="off">
+                <input type="text" id="origin" placeholder="🏙️ Город" autocomplete="off">
                 <div id="origin-suggestions" class="autocomplete-suggestions"></div>
             </div>
             <div class="input-group">
                 <div class="label">Куда</div>
-                <input type="text" id="destination" placeholder="Город" autocomplete="off">
+                <input type="text" id="destination" placeholder="🏙️ Город" autocomplete="off">
                 <div id="destination-suggestions" class="autocomplete-suggestions"></div>
             </div>
         </div>
@@ -180,10 +203,10 @@
             <div class="input-group">
                 <div class="label">Пассажиры</div>
                 <select id="passengers">
-                    <option value="1">1 чел.</option>
-                    <option value="2">2 чел.</option>
-                    <option value="3">3 чел.</option>
-                    <option value="4+">4+ чел.</option>
+                    <option value="1">👤 1 чел.</option>
+                    <option value="2">👤 2 чел.</option>
+                    <option value="3">👤 3 чел.</option>
+                    <option value="4+">👥 4+ чел.</option>
                 </select>
             </div>
         </div>
@@ -192,24 +215,24 @@
             <div class="input-group">
                 <div class="label">Класс</div>
                 <select id="class">
-                    <option value="Эконом">Эконом</option>
-                    <option value="Стандарт">Комфорт</option>
-                    <option value="Бизнес">Бизнес</option>
+                    <option value="Эконом">🎫 Эконом</option>
+                    <option value="Стандарт">🌟 Комфорт</option>
+                    <option value="Бизнес">👑 Бизнес</option>
                 </select>
             </div>
             <div class="input-group">
                 <div class="label">Багаж</div>
                 <select id="baggage">
-                    <option value="Только ручная кладь">Ручная кладь</option>
-                    <option value="1 место до 23кг">Багаж (23кг)</option>
-                    <option value="Нужен расчет">Нужен расчет</option>
+                    <option value="Только ручная кладь">🎒 Ручная кладь</option>
+                    <option value="1 место до 23кг">🧳 Багаж (23кг)</option>
+                    <option value="Нужен расчет">⚖️ Нужен расчет</option>
                 </select>
             </div>
         </div>
 
         <div class="input-group">
             <div class="label">Контактный телефон</div>
-            <input type="tel" id="phone" value="+7" maxlength="12">
+            <input type="tel" id="phone" value="+7 (" maxlength="18" placeholder="+7 (___) ___-__-__">
         </div>
 
         <div class="input-group">
@@ -223,12 +246,31 @@
                 <span class="plane-anim">✈️</span>
             </button>
         </div>
+        <div class="live-hint" id="liveHint"></div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
+
+        // Живые подсказки
+        const hints = [
+            "Сейчас этот рейс смотрят {n} человека",
+            "Осталось 3 билета по этой цене",
+            "Последнее бронирование в этом направлении было 4 мин. назад",
+            "Популярное направление сегодня",
+            "{n} чел. выбирают этот рейс прямо сейчас"
+        ];
+
+        function updateHint() {
+            const hintEl = document.getElementById('liveHint');
+            const randomHint = hints[Math.floor(Math.random() * hints.length)];
+            const n = Math.floor(Math.random() * 4) + 2; // от 2 до 5 чел
+            hintEl.innerText = randomHint.replace('{n}', n);
+        }
+        setInterval(updateHint, 6000);
+        updateHint();
 
         function createStars() {
             const container = document.getElementById('stars-container');
@@ -248,10 +290,15 @@
             document.getElementById('telegram').value = '@' + tg.initDataUnsafe.user.username;
         }
 
+        // Маска телефона
         const phoneInput = document.getElementById('phone');
         phoneInput.addEventListener('input', function(e) {
-            if (!this.value.startsWith('+7')) this.value = '+7';
-            this.value = this.value.replace(/[^\d+]/g, '');
+            let x = this.value.replace(/\D/g, '').match(/(\d{0,1})(\d{0,3})(\d{0,3})(\d{0,2})(\d{0,2})/);
+            if (!x[2] && this.value.length < 4) {
+                this.value = '+7 (';
+            } else {
+                this.value = !x[3] ? '+7 (' + x[2] : '+7 (' + x[2] + ') ' + x[3] + (x[4] ? '-' + x[4] : '') + (x[5] ? '-' + x[5] : '');
+            }
         });
 
         async function searchPlaces(query) {
@@ -306,12 +353,20 @@
                 phone: document.getElementById('phone').value,
                 telegram: document.getElementById('telegram').value
             };
-            if (!data.from || !data.to || data.phone.length < 12) { 
-                tg.showAlert("Пожалуйста, укажите маршрут и полный номер телефона!"); 
+            if (!data.from || !data.to || data.phone.length < 18) { 
+                tg.showAlert("Пожалуйста, заполните маршрут и телефон полностью!"); 
                 return; 
             }
+            
             document.getElementById('btnBox').classList.add('loading');
-            setTimeout(() => { tg.sendData(JSON.stringify(data)); }, 1200);
+            
+            setTimeout(() => { 
+                document.body.classList.add('closing-app');
+                setTimeout(() => {
+                    tg.sendData(JSON.stringify(data));
+                    tg.close();
+                }, 800);
+            }, 1200);
         }
     </script>
 </body>
