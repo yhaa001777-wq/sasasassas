@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Бронирование билетов</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { font-family: -apple-system, sans-serif; background: #F2F5F8; margin: 0; padding: 15px; color: #1f1f1f; }
+        .card { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .header { text-align: center; margin-bottom: 20px; color: #0085FF; }
+        .input-group { margin-bottom: 15px; position: relative; }
+        label { display: block; font-size: 12px; font-weight: 600; color: #8291A3; margin-bottom: 5px; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #EAECEF; border-radius: 10px; font-size: 16px; box-sizing: border-box; outline: none; background: #F9FAFB; }
+        input:focus { border-color: #0085FF; background: white; }
+        .btn { background: #FF8E01; color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        
+        .suggestions { position: absolute; background: white; width: 100%; z-index: 100; border-radius: 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); display: none; margin-top: 5px; max-height: 150px; overflow-y: auto; }
+        .s-item { padding: 12px; border-bottom: 1px solid #f0f0f0; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="header"><h2>Поиск билетов ✈️</h2></div>
+    
+    <div class="input-group">
+        <label>ОТКУДА</label>
+        <input type="text" id="origin" placeholder="Город вылета" autocomplete="off">
+        <div id="origin-list" class="suggestions"></div>
+    </div>
+
+    <div class="input-group">
+        <label>КУДА</label>
+        <input type="text" id="destination" placeholder="Город прибытия" autocomplete="off">
+        <div id="dest-list" class="suggestions"></div>
+    </div>
+
+    <div style="display: flex; gap: 10px;">
+        <div class="input-group" style="flex: 2;">
+            <label>ДАТА</label>
+            <input type="date" id="date">
+        </div>
+        <div class="input-group" style="flex: 1;">
+            <label>КТО</label>
+            <select id="passengers">
+                <option value="1">1 чел</option>
+                <option value="2">2 чел</option>
+                <option value="3">3 чел</option>
+                <option value="4+">4+</option>
+            </select>
+        </div>
+    </div>
+
+    <button class="btn" onclick="sendOrder()">Оставить заявку менеджеру</button>
+</div>
+
+<script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    async function setupAutocomplete(inputId, listId) {
+        const input = document.getElementById(inputId);
+        const list = document.getElementById(listId);
+
+        input.oninput = async () => {
+            if (input.value.length < 2) { list.style.display = 'none'; return; }
+            const res = await fetch(`https://autocomplete.travelpayouts.com/jsearch?static=1&limit=5&term=${input.value}&lang=ru`);
+            const data = await res.json();
+            list.innerHTML = '';
+            if (data.length > 0) {
+                list.style.display = 'block';
+                data.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 's-item';
+                    div.innerText = item.name;
+                    div.onclick = () => { input.value = item.name; list.style.display = 'none'; };
+                    list.appendChild(div);
+                });
+            }
+        };
+    }
+
+    setupAutocomplete('origin', 'origin-list');
+    setupAutocomplete('destination', 'dest-list');
+
+    function sendOrder() {
+        const order = {
+            from: document.getElementById('origin').value,
+            to: document.getElementById('destination').value,
+            date: document.getElementById('date').value,
+            passengers: document.getElementById('passengers').value
+        };
+
+        if (!order.from || !order.to || !order.date) {
+            alert("Пожалуйста, заполните все поля");
+            return;
+        }
+
+        tg.sendData(JSON.stringify(order));
+        tg.close();
+    }
+</script>
+</body>
+</html>
