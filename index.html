@@ -30,7 +30,6 @@
             40%, 60% { background: #1a5276; }
         }
 
-        /* Северное сияние */
         .aurora {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: radial-gradient(circle at 50% -20%, rgba(0, 255, 150, 0.15), transparent 70%),
@@ -95,20 +94,22 @@
         .sky-plane { position: absolute; font-size: 22px; z-index: 3; animation: fly 15s linear infinite; opacity: 0.5; filter: drop-shadow(0 0 10px var(--accent)); }
         @keyframes fly { 0% { left: -50px; opacity: 0; } 10% { opacity: 0.4; } 90% { opacity: 0.4; } 100% { left: 110vw; opacity: 0; } }
 
+        /* Система страниц */
+        .page { display: none; width: 100%; max-width: 380px; z-index: 10; flex-direction: column; align-items: center; }
+        .page.active { display: flex; animation: fadeIn 0.5s ease; }
+
         .card {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
-            border-radius: 28px; padding: 25px; width: 100%; max-width: 380px;
+            border-radius: 28px; padding: 25px; width: 100%;
             box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-            z-index: 10;
             border: 1px solid rgba(255, 255, 255, 0.15);
             box-sizing: border-box;
             transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
             margin: 20px 0;
         }
 
-        /* Анимация закрытия */
         .closing-app .card { transform: scale(0.1) translateY(-500px); opacity: 0; }
         .closing-app { background: black !important; }
 
@@ -121,8 +122,8 @@
             text-transform: uppercase; letter-spacing: 2px; 
         }
 
-        .input-group { margin-bottom: 18px; position: relative; }
-        .row { display: flex; gap: 10px; margin-bottom: 18px; }
+        .input-group { margin-bottom: 18px; position: relative; width: 100%; }
+        .row { display: flex; gap: 10px; margin-bottom: 18px; width: 100%; }
         .row > div { flex: 1; }
         .label { font-size: 10px; font-weight: 700; color: var(--accent); text-transform: uppercase; margin-bottom: 6px; padding-left: 5px; opacity: 0.9; }
 
@@ -131,9 +132,7 @@
             border-radius: 16px; font-size: 15px; outline: none; box-sizing: border-box; 
             background: rgba(255, 255, 255, 0.08); color: white; transition: all 0.3s ease;
         }
-        input::placeholder { color: rgba(255, 255, 255, 0.4); }
         input:focus { border-color: var(--accent); background: rgba(255, 255, 255, 0.15); transform: translateY(-1px); }
-        option { background: #2c3e50; color: white; }
 
         .autocomplete-suggestions {
             position: absolute; top: 100%; left: 0; right: 0;
@@ -144,15 +143,12 @@
             opacity: 0; pointer-events: none; transform: translateY(-10px);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .autocomplete-suggestions.active {
-            opacity: 1; pointer-events: auto; transform: translateY(0);
-        }
-
-        .suggestion { padding: 12px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; transition: background 0.2s; }
+        .autocomplete-suggestions.active { opacity: 1; pointer-events: auto; transform: translateY(0); }
+        .suggestion { padding: 12px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; }
         .suggestion:hover { background: rgba(255, 179, 71, 0.2); }
         .suggestion div { color: #aaa; font-size: 11px; }
 
-        .btn-box { position: relative; margin-top: 20px; border-radius: 18px; overflow: hidden; }
+        .btn-box { position: relative; margin-top: 20px; border-radius: 18px; overflow: hidden; width: 100%; }
         .btn { 
             background: var(--gold-grad); 
             color: #000; border: none; padding: 18px; width: 100%; 
@@ -163,144 +159,270 @@
         }
         .btn:active { transform: scale(0.96); opacity: 0.9; }
         
-        .plane-anim { position: absolute; left: -60px; top: 50%; transform: translateY(-50%); font-size: 24px; transition: 1.2s cubic-bezier(0.4, 0, 0.2, 1); }
-        .loading .plane-anim { left: 110%; }
-        .loading span { opacity: 0; }
-
-        .live-hint {
-            text-align: center; font-size: 11px; color: rgba(255,255,255,0.5);
-            margin-top: 15px; min-height: 14px; font-style: italic;
-        }
-
-        /* --- СТИЛИ ДЛЯ РЕЗУЛЬТАТОВ API --- */
-        #results-container {
-            width: 100%; max-width: 380px; z-index: 10; margin-bottom: 30px;
-        }
+        /* Стили для билетов */
+        #results-container { width: 100%; }
         .ticket-card {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 20px; padding: 15px; margin-bottom: 12px;
-            animation: fadeIn 0.5s ease forwards;
+            cursor: pointer; transition: 0.3s;
         }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .ticket-card:hover { border-color: var(--accent); background: rgba(255, 255, 255, 0.15); }
+        .ticket-card.selected { border: 2px solid var(--accent); background: rgba(255, 179, 71, 0.15); }
         .ticket-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .airline-info { font-weight: bold; color: var(--accent); font-size: 14px; }
         .price-info { font-size: 18px; font-weight: 800; color: #fff; }
-        .price-old { text-decoration: line-through; color: rgba(255,255,255,0.4); font-size: 12px; margin-right: 5px; }
         .ticket-route { display: flex; align-items: center; gap: 10px; font-size: 13px; }
         .route-line { flex: 1; height: 1px; background: rgba(255,255,255,0.2); position: relative; }
         .route-line::after { content: '✈️'; position: absolute; top: -10px; left: 45%; font-size: 12px; }
+
+        .live-hint { text-align: center; font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 15px; font-style: italic; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
     <div class="aurora"></div>
-    <div class="orbit">
-        <div class="sun">☀️</div>
-        <div class="moon">🌙</div>
-    </div>
-
+    <div class="orbit"><div class="sun">☀️</div><div class="moon">🌙</div></div>
     <div class="glow"></div>
     <div class="sky-plane">✈️</div>
     <div id="stars-container"></div>
 
-    <div class="card">
-        <h2>KupiAvia ✈️</h2>
-        
-        <div class="row">
-            <div class="input-group">
-                <div class="label">Откуда</div>
-                <input type="text" id="origin" placeholder="🏙️ Город" autocomplete="off">
-                <div id="origin-suggestions" class="autocomplete-suggestions"></div>
+    <div id="page1" class="page active">
+        <div class="card">
+            <h2>KupiAvia ✈️</h2>
+            <div class="row">
+                <div class="input-group">
+                    <div class="label">Откуда</div>
+                    <input type="text" id="origin" placeholder="🏙️ Город" autocomplete="off">
+                    <div id="origin-suggestions" class="autocomplete-suggestions"></div>
+                </div>
+                <div class="input-group">
+                    <div class="label">Куда</div>
+                    <input type="text" id="destination" placeholder="🏙️ Город" autocomplete="off">
+                    <div id="destination-suggestions" class="autocomplete-suggestions"></div>
+                </div>
             </div>
-            <div class="input-group">
-                <div class="label">Куда</div>
-                <input type="text" id="destination" placeholder="🏙️ Город" autocomplete="off">
-                <div id="destination-suggestions" class="autocomplete-suggestions"></div>
+            <div class="row">
+                <div class="input-group">
+                    <div class="label">Дата вылета</div>
+                    <input type="date" id="date">
+                </div>
+                <div class="input-group">
+                    <div class="label">Пассажиры</div>
+                    <select id="passengers">
+                        <option value="1"> 1 чел.</option>
+                        <option value="2"> 2 чел.</option>
+                        <option value="3"> 3 чел.</option>
+                        <option value="4+"> 4+ чел.</option>
+                    </select>
+                </div>
             </div>
-        </div>
-
-        <div class="row">
-            <div class="input-group">
-                <div class="label">Дата вылета</div>
-                <input type="date" id="date">
+            <div class="row">
+                <div class="input-group">
+                    <div class="label">Класс</div>
+                    <select id="class">
+                        <option value="Эконом"> Эконом</option>
+                        <option value="Комфорт"> Комфорт</option>
+                        <option value="Бизнес"> Бизнес</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <div class="label">Багаж</div>
+                    <select id="baggage">
+                        <option value="Ручная кладь"> Ручная кладь</option>
+                        <option value="Багаж (23кг)"> Багаж (23кг)</option>
+                        <option value="Нужен расчет"> Нужен расчет</option>
+                    </select>
+                </div>
             </div>
-            <div class="input-group">
-                <div class="label">Пассажиры</div>
-                <select id="passengers">
-                    <option value="1"> 1 чел.</option>
-                    <option value="2"> 2 чел.</option>
-                    <option value="3"> 3 чел.</option>
-                    <option value="4+"> 4+ чел.</option>
-                </select>
+            <div class="btn-box">
+                <button class="btn" onclick="goToPage2()"><span>Продолжить</span></button>
             </div>
+            <div class="live-hint" id="liveHint"></div>
         </div>
-
-        <div class="row">
-            <div class="input-group">
-                <div class="label">Класс</div>
-                <select id="class">
-                    <option value="Эконом"> Эконом</option>
-                    <option value="Стандарт"> Комфорт</option>
-                    <option value="Бизнес"> Бизнес</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <div class="label">Багаж</div>
-                <select id="baggage">
-                    <option value="Только ручная кладь"> Ручная кладь</option>
-                    <option value="1 место до 23кг"> Багаж (23кг)</option>
-                    <option value="Нужен расчет"> Нужен расчет</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="input-group">
-            <div class="label">Контактный телефон</div>
-            <input type="tel" id="phone" value="+7 (" maxlength="18" placeholder="+7 (___) ___-__-__">
-        </div>
-
-        <div class="input-group">
-            <div class="label">Ваш Telegram</div>
-            <input type="text" id="telegram" placeholder="@username">
-        </div>
-
-        <div class="btn-box" id="btnBox">
-            <button class="btn" onclick="sendOrder()">
-                <span>Оставить заявку</span>
-                <span class="plane-anim">✈️</span>
-            </button>
-        </div>
-        <div class="live-hint" id="liveHint"></div>
     </div>
 
-    <div id="results-container"></div>
+    <div id="page2" class="page">
+        <h2 style="margin-top:20px;">Выберите рейс</h2>
+        <div id="results-container"></div>
+        <div class="btn-box">
+            <button class="btn" onclick="goToPage3()"><span>Продолжить</span></button>
+        </div>
+        <button onclick="switchPage(1)" style="background:none; border:none; color:rgba(255,255,255,0.5); margin-top:15px; cursor:pointer;">← Назад к поиску</button>
+    </div>
+
+    <div id="page3" class="page">
+        <div class="card">
+            <h2>Данные пассажира</h2>
+            <div class="input-group">
+                <div class="label">Имя</div>
+                <input type="text" id="name" placeholder="Иван Иванов">
+            </div>
+            <div class="input-group">
+                <div class="label">Номер телефона</div>
+                <input type="tel" id="phone" value="+7 (" placeholder="+7 (___) ___-__-__">
+            </div>
+            <div class="input-group">
+                <div class="label">Электронный адрес</div>
+                <input type="email" id="email" placeholder="example@mail.ru">
+            </div>
+            <div class="input-group">
+                <div class="label">Телеграмм</div>
+                <input type="text" id="telegram" placeholder="@username">
+            </div>
+            <div class="btn-box">
+                <button class="btn" onclick="finishOrder()"><span>Забронировать</span></button>
+            </div>
+        </div>
+    </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
 
-        const API_TOKEN = "c6dd78e239fcf7c47f3f9fd58c0e2b8c"; // Твой токен
+        const API_TOKEN = "c6dd78e239fcf7c47f3f9fd58c0e2b8c";
+        let originCode = "", destCode = "", selectedTicket = null;
 
-        const hints = [
-            "Сейчас этот рейс смотрят {n} человека",
-            "Осталось 3 билета по этой цене",
-            "Последнее бронирование в этом направлении было 4 мин. назад",
-            "Популярное направление сегодня",
-            "{n} чел. выбирают этот рейс прямо сейчас"
-        ];
-
-        function updateHint() {
-            const hintEl = document.getElementById('liveHint');
-            const randomHint = hints[Math.floor(Math.random() * hints.length)];
-            const n = Math.floor(Math.random() * 4) + 2; 
-            hintEl.innerText = randomHint.replace('{n}', n);
+        // Переключение страниц
+        function switchPage(pageNumber) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page' + pageNumber).classList.add('active');
+            window.scrollTo(0,0);
         }
-        setInterval(updateHint, 6000);
-        updateHint();
 
+        function goToPage2() {
+            if (!originCode || !destCode) {
+                tg.showAlert("Выберите города из списка!");
+                return;
+            }
+            fetchPrices();
+            switchPage(2);
+        }
+
+        function goToPage3() {
+            if (!selectedTicket) {
+                tg.showAlert("Пожалуйста, выберите подходящий рейс!");
+                return;
+            }
+            switchPage(3);
+        }
+
+        // Поиск билетов
+        async function fetchPrices() {
+            const container = document.getElementById('results-container');
+            container.innerHTML = '<div style="text-align:center; padding:20px; opacity:0.6;">Ищем рейсы...</div>';
+            const dateVal = document.getElementById('date').value.substring(0, 7);
+            
+            try {
+                const url = `https://api.travelpayouts.com/aviasales/v3/prices_for_dates?origin=${originCode}&destination=${destCode}&departure_at=${dateVal}&currency=rub&limit=5&token=${API_TOKEN}`;
+                const response = await fetch(url);
+                const json = await response.json();
+                container.innerHTML = '';
+
+                if (json.success && json.data.length > 0) {
+                    json.data.forEach((ticket, index) => {
+                        const ourPrice = Math.floor(ticket.price * 0.85);
+                        const card = document.createElement('div');
+                        card.className = 'ticket-card';
+                        card.innerHTML = `
+                            <div class="ticket-header">
+                                <div class="airline-info">Рейс ${ticket.airline}</div>
+                                <div class="price-info">${ourPrice} ₽</div>
+                            </div>
+                            <div class="ticket-route">
+                                <span>${ticket.origin}</span>
+                                <div class="route-line"></div>
+                                <span>${ticket.destination}</span>
+                            </div>
+                            <div style="font-size:10px; margin-top:8px; opacity:0.5;">Вылет: ${new Date(ticket.departure_at).toLocaleDateString('ru-RU')}</div>
+                        `;
+                        card.onclick = () => {
+                            document.querySelectorAll('.ticket-card').forEach(c => c.classList.remove('selected'));
+                            card.classList.add('selected');
+                            selectedTicket = { ...ticket, final_price: ourPrice };
+                        };
+                        container.appendChild(card);
+                    });
+                } else {
+                    container.innerHTML = '<div class="card" style="text-align:center;">Прямых рейсов не найдено. Нажмите продолжить для индивидуального расчета.</div>';
+                    selectedTicket = "Индивидуальный расчет";
+                }
+            } catch (e) { container.innerHTML = 'Ошибка загрузки данных.'; }
+        }
+
+        // Финал
+        function finishOrder() {
+            const data = {
+                from: document.getElementById('origin').value,
+                to: document.getElementById('destination').value,
+                date: document.getElementById('date').value,
+                passengers: document.getElementById('passengers').value,
+                class: document.getElementById('class').value,
+                baggage: document.getElementById('baggage').value,
+                name: document.getElementById('name').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value,
+                telegram: document.getElementById('telegram').value,
+                ticket_details: selectedTicket
+            };
+
+            if (!data.name || data.phone.length < 10) {
+                tg.showAlert("Заполните контактные данные!");
+                return;
+            }
+
+            document.body.classList.add('closing-app');
+            setTimeout(() => {
+                tg.sendData(JSON.stringify(data));
+                tg.close();
+            }, 800);
+        }
+
+        // Автокомплит (остался без изменений в логике)
+        async function searchPlaces(query) {
+            if (query.length < 2) return [];
+            const r = await fetch(`https://autocomplete.travelpayouts.com/places2?term=${query}&locale=ru&types[]=city`);
+            return await r.json();
+        }
+
+        function setupAutocomplete(inputId, suggestionsId, isOrigin) {
+            const input = document.getElementById(inputId);
+            const list = document.getElementById(suggestionsId);
+            input.addEventListener('input', async () => {
+                const res = await searchPlaces(input.value);
+                list.innerHTML = '';
+                if (res.length > 0) {
+                    res.forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = 'suggestion';
+                        div.innerHTML = `${item.name} (${item.code}) <div>${item.country_name}</div>`;
+                        div.onclick = () => {
+                            input.value = item.name + ' (' + item.code + ')';
+                            if(isOrigin) originCode = item.code; else destCode = item.code;
+                            list.classList.remove('active');
+                        };
+                        list.appendChild(div);
+                    });
+                    list.classList.add('active');
+                } else list.classList.remove('active');
+            });
+        }
+
+        setupAutocomplete('origin', 'origin-suggestions', true);
+        setupAutocomplete('destination', 'destination-suggestions', false);
+        document.getElementById('date').valueAsDate = new Date();
+
+        // Маска телефона
+        document.getElementById('phone').addEventListener('input', function(e) {
+            let x = this.value.replace(/\D/g, '').match(/(\d{0,1})(\d{0,3})(\d{0,3})(\d{0,2})(\d{0,2})/);
+            this.value = !x[3] ? '+7 (' + (x[2]||'') : '+7 (' + x[2] + ') ' + x[3] + (x[4] ? '-' + x[4] : '') + (x[5] ? '-' + x[5] : '');
+        });
+
+        // Декор
         function createStars() {
             const container = document.getElementById('stars-container');
             for (let i = 0; i < 6; i++) {
@@ -312,146 +434,12 @@
             }
         }
         createStars();
-
-        tg.setHeaderColor('#2c3e50');
-
-        if (tg.initDataUnsafe.user && tg.initDataUnsafe.user.username) {
-            document.getElementById('telegram').value = '@' + tg.initDataUnsafe.user.username;
-        }
-
-        const phoneInput = document.getElementById('phone');
-        phoneInput.addEventListener('input', function(e) {
-            let x = this.value.replace(/\D/g, '').match(/(\d{0,1})(\d{0,3})(\d{0,3})(\d{0,2})(\d{0,2})/);
-            if (!x[2] && this.value.length < 4) {
-                this.value = '+7 (';
-            } else {
-                this.value = !x[3] ? '+7 (' + x[2] : '+7 (' + x[2] + ') ' + x[3] + (x[4] ? '-' + x[4] : '') + (x[5] ? '-' + x[5] : '');
-            }
-        });
-
-        // ПЕРЕМЕННЫЕ ДЛЯ ХРАНЕНИЯ КОДОВ IATA
-        let originCode = "";
-        let destCode = "";
-
-        async function searchPlaces(query) {
-            if (query.length < 2) return [];
-            try {
-                const response = await fetch(`https://autocomplete.travelpayouts.com/places2?term=${query}&locale=ru&types[]=city&types[]=airport`);
-                return await response.json();
-            } catch (e) { return []; }
-        }
-
-        // ФУНКЦИЯ ПОИСКА ЦЕН ЧЕРЕЗ API
-        async function fetchPrices() {
-            if (!originCode || !destCode) return;
-            
-            const resultsContainer = document.getElementById('results-container');
-            resultsContainer.innerHTML = '<div style="text-align:center; font-size:12px; opacity:0.6;">Ищем лучшие предложения...</div>';
-
-            const dateVal = document.getElementById('date').value.substring(0, 7); // формат YYYY-MM
-            
-            try {
-                const url = `https://api.travelpayouts.com/aviasales/v3/prices_for_dates?origin=${originCode}&destination=${destCode}&departure_at=${dateVal}&currency=rub&limit=3&token=${API_TOKEN}`;
-                const response = await fetch(url);
-                const json = await response.json();
-
-                resultsContainer.innerHTML = '';
-
-                if (json.success && json.data.length > 0) {
-                    json.data.forEach(ticket => {
-                        const card = document.createElement('div');
-                        card.className = 'ticket-card';
-                        
-                        // Рассчитываем нашу "скидку" для визуала (например -20% от цены API)
-                        const ourPrice = Math.floor(ticket.price * 0.82);
-
-                        card.innerHTML = `
-                            <div class="ticket-header">
-                                <div class="airline-info">✈️ Рейс ${ticket.airline}</div>
-                                <div class="price-info">
-                                    <span class="price-old">${ticket.price} ₽</span>
-                                    <span>${ourPrice} ₽</span>
-                                </div>
-                            </div>
-                            <div class="ticket-route">
-                                <span>${ticket.origin}</span>
-                                <div class="route-line"></div>
-                                <span>${ticket.destination}</span>
-                            </div>
-                            <div style="font-size:10px; margin-top:8px; opacity:0.5;">Вылет: ${new Date(ticket.departure_at).toLocaleDateString('ru-RU')}</div>
-                        `;
-                        resultsContainer.appendChild(card);
-                    });
-                } else {
-                    resultsContainer.innerHTML = '<div style="text-align:center; font-size:12px; opacity:0.4;">На эту дату прямых квот пока нет, заполните заявку для ручного поиска.</div>';
-                }
-            } catch (e) {
-                resultsContainer.innerHTML = '';
-            }
-        }
-
-        function setupAutocomplete(inputId, suggestionsId, isOrigin) {
-            const input = document.getElementById(inputId);
-            const list = document.getElementById(suggestionsId);
-            let timeout;
-            input.addEventListener('input', () => {
-                clearTimeout(timeout);
-                timeout = setTimeout(async () => {
-                    const query = input.value.trim();
-                    const results = await searchPlaces(query);
-                    list.innerHTML = '';
-                    if (results.length > 0) {
-                        results.forEach(item => {
-                            const div = document.createElement('div');
-                            div.className = 'suggestion';
-                            const typeLabel = item.type === 'airport' ? '✈️ ' : '🏙️ ';
-                            div.innerHTML = `${typeLabel}${item.name} (${item.code}) <div>${item.country_name}</div>`;
-                            div.onclick = () => {
-                                input.value = item.name + ' (' + item.code + ')';
-                                if(isOrigin) originCode = item.code; else destCode = item.code;
-                                list.classList.remove('active');
-                                fetchPrices(); // Ищем цены при выборе города
-                            };
-                            list.appendChild(div);
-                        });
-                        list.classList.add('active');
-                    } else { list.classList.remove('active'); }
-                }, 300);
-            });
-            document.addEventListener('click', (e) => { if (e.target !== input) list.classList.remove('active'); });
-        }
-
-        setupAutocomplete('origin', 'origin-suggestions', true);
-        setupAutocomplete('destination', 'destination-suggestions', false);
-        document.getElementById('date').valueAsDate = new Date();
-        document.getElementById('date').addEventListener('change', fetchPrices);
-
-        function sendOrder() {
-            const data = {
-                from: document.getElementById('origin').value,
-                to: document.getElementById('destination').value,
-                date: document.getElementById('date').value,
-                passengers: document.getElementById('passengers').value,
-                class: document.getElementById('class').value,
-                baggage: document.getElementById('baggage').value,
-                phone: document.getElementById('phone').value,
-                telegram: document.getElementById('telegram').value
-            };
-            if (!data.from || !data.to || data.phone.length < 18) { 
-                tg.showAlert("Пожалуйста, заполните маршрут и телефон полностью!"); 
-                return; 
-            }
-            
-            document.getElementById('btnBox').classList.add('loading');
-            
-            setTimeout(() => { 
-                document.body.classList.add('closing-app');
-                setTimeout(() => {
-                    tg.sendData(JSON.stringify(data));
-                    tg.close();
-                }, 800);
-            }, 1200);
-        }
+        
+        const hints = ["Сейчас этот рейс смотрят {n} чел.", "Осталось 3 билета по этой цене", "Популярное направление сегодня"];
+        setInterval(() => {
+            const n = Math.floor(Math.random() * 4) + 2;
+            document.getElementById('liveHint').innerText = hints[Math.floor(Math.random() * hints.length)].replace('{n}', n);
+        }, 5000);
     </script>
 </body>
 </html>
