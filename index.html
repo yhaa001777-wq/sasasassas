@@ -2,444 +2,161 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SkyBooking Luxury</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kupi Avia</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root {
-            --glass: rgba(255, 255, 255, 0.15);
-            --glass-text: #ffffff;
-            --accent: #ffb347; /* Песочное золото */
-            --gold-grad: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
-            --bg-night: linear-gradient(180deg, #2c3e50 0%, #000000 100%);
-        }
-
         body {
-            margin: 0; padding: 15px;
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg-night);
-            min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-            overflow-y: auto;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a3a5a;
             color: white;
-            transition: background 5s ease-in-out;
-            animation: skyCycle 25s infinite linear;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-
-        @keyframes skyCycle {
-            0%, 100% { background: #000000; }
-            40%, 60% { background: #1a5276; }
-        }
-
-        .aurora {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% -20%, rgba(0, 255, 150, 0.15), transparent 70%),
-                        radial-gradient(circle at 20% -10%, rgba(150, 0, 255, 0.1), transparent 60%);
-            filter: blur(60px); opacity: 0; z-index: 0; pointer-events: none;
-            animation: auroraFade 25s infinite linear;
-        }
-        @keyframes auroraFade {
-            0%, 20%, 80%, 100% { opacity: 0; }
-            45%, 55% { opacity: 1; }
-        }
-
-        .orbit {
-            position: fixed; top: 50%; left: 50%;
-            width: 120vw; height: 120vw;
-            margin-left: -60vw; margin-top: -30vw;
-            border-radius: 50%;
-            z-index: 0;
-            animation: rotateOrbit 25s infinite linear;
-            pointer-events: none;
-            filter: blur(35px);
-            opacity: 0.8;
-        }
-        .sun { position: absolute; top: 0; left: 50%; transform: translateX(-50%); font-size: 80px; filter: drop-shadow(0 0 40px orange); }
-        .moon { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); font-size: 70px; filter: drop-shadow(0 0 30px white); }
-
-        @keyframes rotateOrbit {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .star {
-            position: fixed; top: -10vh; width: 2px; height: 2px;
-            background: white; border-radius: 50%;
-            box-shadow: 0 0 10px white; z-index: 1;
-            animation: shoot 4s linear infinite, starFade 25s infinite linear;
-        }
-        .star::after {
-            content: ''; position: absolute; top: 0; left: 50%;
-            width: 1px; height: 80px;
-            background: linear-gradient(180deg, white, transparent);
-            transform: translateX(-50%);
-        }
-        @keyframes shoot {
-            0% { transform: translateY(0) translateX(0); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateY(110vh) translateX(50px); opacity: 0; }
-        }
-        @keyframes starFade {
-            0%, 20%, 80%, 100% { opacity: 1; }
-            40%, 60% { opacity: 0; }
-        }
-
-        .glow {
-            position: fixed; top: 0; left: 50%; transform: translateX(-50%);
-            width: 100%; height: 300px;
-            background: radial-gradient(circle, rgba(253, 160, 133, 0.3) 0%, transparent 70%);
-            z-index: 0; pointer-events: none;
-        }
-
-        .sky-plane { position: absolute; font-size: 22px; z-index: 3; animation: fly 15s linear infinite; opacity: 0.5; filter: drop-shadow(0 0 10px var(--accent)); }
-        @keyframes fly { 0% { left: -50px; opacity: 0; } 10% { opacity: 0.4; } 90% { opacity: 0.4; } 100% { left: 110vw; opacity: 0; } }
-
-        /* Система страниц */
-        .page { display: none; width: 100%; max-width: 380px; z-index: 10; flex-direction: column; align-items: center; }
-        .page.active { display: flex; animation: fadeIn 0.5s ease; }
-
-        .card {
+        .container {
             background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border-radius: 28px; padding: 25px; width: 100%;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 20px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        h1 {
+            text-align: center;
+            color: #ffb347;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 12px;
+            color: #ffb347;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
             box-sizing: border-box;
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            margin: 20px 0;
         }
-
-        .closing-app .card { transform: scale(0.1) translateY(-500px); opacity: 0; }
-        .closing-app { background: black !important; }
-
-        h2 { 
-            text-align: center; 
-            background: var(--gold-grad);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin: 0 0 25px 0; font-size: 26px; font-weight: 800; 
-            text-transform: uppercase; letter-spacing: 2px; 
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
         }
-
-        .input-group { margin-bottom: 18px; position: relative; width: 100%; }
-        .row { display: flex; gap: 10px; margin-bottom: 18px; width: 100%; }
-        .row > div { flex: 1; }
-        .label { font-size: 10px; font-weight: 700; color: var(--accent); text-transform: uppercase; margin-bottom: 6px; padding-left: 5px; opacity: 0.9; }
-
-        input, select { 
-            width: 100%; padding: 14px; border: 1px solid rgba(255, 255, 255, 0.1); 
-            border-radius: 16px; font-size: 15px; outline: none; box-sizing: border-box; 
-            background: rgba(255, 255, 255, 0.08); color: white; transition: all 0.3s ease;
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border-radius: 15px;
+            border: none;
+            background: linear-gradient(to right, #ffb347, #ffcc33);
+            color: black;
+            font-weight: bold;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 20px;
         }
-        input:focus { border-color: var(--accent); background: rgba(255, 255, 255, 0.15); transform: translateY(-1px); }
-
-        .autocomplete-suggestions {
-            position: absolute; top: 100%; left: 0; right: 0;
-            background: rgba(44, 62, 80, 0.95); border-radius: 14px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-            max-height: 180px; overflow-y: auto; z-index: 100; margin-top: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            opacity: 0; pointer-events: none; transform: translateY(-10px);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        .footer-text {
+            text-align: center;
+            font-size: 10px;
+            margin-top: 15px;
+            color: rgba(255, 255, 255, 0.5);
         }
-        .autocomplete-suggestions.active { opacity: 1; pointer-events: auto; transform: translateY(0); }
-        .suggestion { padding: 12px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; }
-        .suggestion:hover { background: rgba(255, 179, 71, 0.2); }
-        .suggestion div { color: #aaa; font-size: 11px; }
-
-        .btn-box { position: relative; margin-top: 20px; border-radius: 18px; overflow: hidden; width: 100%; }
-        .btn { 
-            background: var(--gold-grad); 
-            color: #000; border: none; padding: 18px; width: 100%; 
-            font-size: 17px; font-weight: 800; cursor: pointer; 
-            text-transform: uppercase; letter-spacing: 1px;
-            transition: 0.3s;
-            box-shadow: 0 10px 20px rgba(253, 160, 133, 0.3);
-        }
-        .btn:active { transform: scale(0.96); opacity: 0.9; }
-        
-        /* Стили для билетов */
-        #results-container { width: 100%; }
-        .ticket-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px; padding: 15px; margin-bottom: 12px;
-            cursor: pointer; transition: 0.3s;
-        }
-        .ticket-card:hover { border-color: var(--accent); background: rgba(255, 255, 255, 0.15); }
-        .ticket-card.selected { border: 2px solid var(--accent); background: rgba(255, 179, 71, 0.15); }
-        .ticket-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .airline-info { font-weight: bold; color: var(--accent); font-size: 14px; }
-        .price-info { font-size: 18px; font-weight: 800; color: #fff; }
-        .ticket-route { display: flex; align-items: center; gap: 10px; font-size: 13px; }
-        .route-line { flex: 1; height: 1px; background: rgba(255,255,255,0.2); position: relative; }
-        .route-line::after { content: '✈️'; position: absolute; top: -10px; left: 45%; font-size: 12px; }
-
-        .live-hint { text-align: center; font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 15px; font-style: italic; }
-        
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <div class="aurora"></div>
-    <div class="orbit"><div class="sun">☀️</div><div class="moon">🌙</div></div>
-    <div class="glow"></div>
-    <div class="sky-plane">✈️</div>
-    <div id="stars-container"></div>
+<div class="container" id="search-screen">
+    <h1>KUPIAVIA ✈️</h1>
+    
+    <div class="form-group">
+        <label>ОТКУДА</label>
+        <input type="text" id="from" placeholder="Минеральные Воды">
+    </div>
 
-    <div id="page1" class="page active">
-        <div class="card">
-            <h2>KupiAvia ✈️</h2>
-            <div class="row">
-                <div class="input-group">
-                    <div class="label">Откуда</div>
-                    <input type="text" id="origin" placeholder="🏙️ Город" autocomplete="off">
-                    <div id="origin-suggestions" class="autocomplete-suggestions"></div>
-                </div>
-                <div class="input-group">
-                    <div class="label">Куда</div>
-                    <input type="text" id="destination" placeholder="🏙️ Город" autocomplete="off">
-                    <div id="destination-suggestions" class="autocomplete-suggestions"></div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="input-group">
-                    <div class="label">Дата вылета</div>
-                    <input type="date" id="date">
-                </div>
-                <div class="input-group">
-                    <div class="label">Пассажиры</div>
-                    <select id="passengers">
-                        <option value="1"> 1 чел.</option>
-                        <option value="2"> 2 чел.</option>
-                        <option value="3"> 3 чел.</option>
-                        <option value="4+"> 4+ чел.</option>
-                    </select>
-                </div>
-            </div>
-            <div class="row">
-                <div class="input-group">
-                    <div class="label">Класс</div>
-                    <select id="class">
-                        <option value="Эконом"> Эконом</option>
-                        <option value="Комфорт"> Комфорт</option>
-                        <option value="Бизнес"> Бизнес</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <div class="label">Багаж</div>
-                    <select id="baggage">
-                        <option value="Ручная кладь"> Ручная кладь</option>
-                        <option value="Багаж (23кг)"> Багаж (23кг)</option>
-                        <option value="Нужен расчет"> Нужен расчет</option>
-                    </select>
-                </div>
-            </div>
-            <div class="btn-box">
-                <button class="btn" onclick="goToPage2()"><span>Продолжить</span></button>
-            </div>
-            <div class="live-hint" id="liveHint"></div>
+    <div class="form-group">
+        <label>КУДА</label>
+        <input type="text" id="to" placeholder="Махачкала (MCX)">
+    </div>
+
+    <div style="display: flex; gap: 10px;">
+        <div class="form-group" style="flex: 1;">
+            <label>ДАТА ВЫЛЕТА</label>
+            <input type="date" id="date">
+        </div>
+        <div class="form-group" style="flex: 1;">
+            <label>ПАССАЖИРЫ</label>
+            <select id="passengers">
+                <option>1 чел.</option>
+                <option>2 чел.</option>
+                <option>3 чел.</option>
+            </select>
         </div>
     </div>
 
-    <div id="page2" class="page">
-        <h2 style="margin-top:20px;">Выберите рейс</h2>
-        <div id="results-container"></div>
-        <div class="btn-box">
-            <button class="btn" onclick="goToPage3()"><span>Продолжить</span></button>
+    <div style="display: flex; gap: 10px;">
+        <div class="form-group" style="flex: 1;">
+            <label>КЛАСС</label>
+            <select id="class">
+                <option>Эконом</option>
+                <option>Бизнес</option>
+            </select>
         </div>
-        <button onclick="switchPage(1)" style="background:none; border:none; color:rgba(255,255,255,0.5); margin-top:15px; cursor:pointer;">← Назад к поиску</button>
-    </div>
-
-    <div id="page3" class="page">
-        <div class="card">
-            <h2>Данные пассажира</h2>
-            <div class="input-group">
-                <div class="label">Имя</div>
-                <input type="text" id="name" placeholder="Иван Иванов">
-            </div>
-            <div class="input-group">
-                <div class="label">Номер телефона</div>
-                <input type="tel" id="phone" value="+7 (" placeholder="+7 (___) ___-__-__">
-            </div>
-            <div class="input-group">
-                <div class="label">Электронный адрес</div>
-                <input type="email" id="email" placeholder="example@mail.ru">
-            </div>
-            <div class="input-group">
-                <div class="label">Телеграмм</div>
-                <input type="text" id="telegram" placeholder="@username">
-            </div>
-            <div class="btn-box">
-                <button class="btn" onclick="finishOrder()"><span>Забронировать</span></button>
-            </div>
+        <div class="form-group" style="flex: 1;">
+            <label>БАГАЖ</label>
+            <select id="baggage">
+                <option>Ручная кладь</option>
+                <option>С багажом</option>
+            </select>
         </div>
     </div>
 
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.ready();
-        tg.expand();
+    <div class="form-group">
+        <label>КОНТАКТНЫЙ ТЕЛЕФОН</label>
+        <input type="tel" id="phone" placeholder="+7 (">
+    </div>
 
-        const API_TOKEN = "c6dd78e239fcf7c47f3f9fd58c0e2b8c";
-        let originCode = "", destCode = "", selectedTicket = null;
+    <div class="form-group">
+        <label>ВАШ TELEGRAM</label>
+        <input type="text" id="telegram" placeholder="@username">
+    </div>
 
-        // Переключение страниц
-        function switchPage(pageNumber) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById('page' + pageNumber).classList.add('active');
-            window.scrollTo(0,0);
-        }
+    <button class="btn" onclick="sendOrder()">ОСТАВИТЬ ЗАЯВКУ</button>
+    <div class="footer-text">3 чел. выбирают этот рейс прямо сейчас</div>
+</div>
 
-        function goToPage2() {
-            if (!originCode || !destCode) {
-                tg.showAlert("Выберите города из списка!");
-                return;
-            }
-            fetchPrices();
-            switchPage(2);
-        }
+<script>
+    let tg = window.Telegram.WebApp;
+    tg.expand();
 
-        function goToPage3() {
-            if (!selectedTicket) {
-                tg.showAlert("Пожалуйста, выберите подходящий рейс!");
-                return;
-            }
-            switchPage(3);
-        }
+    function sendOrder() {
+        let data = {
+            action: "search_tickets",
+            from: document.getElementById('from').value,
+            to: document.getElementById('to').value,
+            origin: "MRV", // Для примера кода IATA города (нужно будет доработать автоподстановку)
+            destination: "MCX",
+            departure_at: document.getElementById('date').value,
+            date: document.getElementById('date').value,
+            class: document.getElementById('class').value,
+            baggage: document.getElementById('baggage').value,
+            phone: document.getElementById('phone').value,
+            telegram: document.getElementById('telegram').value
+        };
 
-        // Поиск билетов
-        async function fetchPrices() {
-            const container = document.getElementById('results-container');
-            container.innerHTML = '<div style="text-align:center; padding:20px; opacity:0.6;">Ищем рейсы...</div>';
-            const dateVal = document.getElementById('date').value.substring(0, 7);
-            
-            try {
-                const url = `https://api.travelpayouts.com/aviasales/v3/prices_for_dates?origin=${originCode}&destination=${destCode}&departure_at=${dateVal}&currency=rub&limit=5&token=${API_TOKEN}`;
-                const response = await fetch(url);
-                const json = await response.json();
-                container.innerHTML = '';
+        // Мы отправляем данные боту. Бот сам сделает запрос к API и решит проблему CORS.
+        tg.sendData(JSON.stringify(data));
+        tg.close();
+    }
+</script>
 
-                if (json.success && json.data.length > 0) {
-                    json.data.forEach((ticket, index) => {
-                        const ourPrice = Math.floor(ticket.price * 0.85);
-                        const card = document.createElement('div');
-                        card.className = 'ticket-card';
-                        card.innerHTML = `
-                            <div class="ticket-header">
-                                <div class="airline-info">Рейс ${ticket.airline}</div>
-                                <div class="price-info">${ourPrice} ₽</div>
-                            </div>
-                            <div class="ticket-route">
-                                <span>${ticket.origin}</span>
-                                <div class="route-line"></div>
-                                <span>${ticket.destination}</span>
-                            </div>
-                            <div style="font-size:10px; margin-top:8px; opacity:0.5;">Вылет: ${new Date(ticket.departure_at).toLocaleDateString('ru-RU')}</div>
-                        `;
-                        card.onclick = () => {
-                            document.querySelectorAll('.ticket-card').forEach(c => c.classList.remove('selected'));
-                            card.classList.add('selected');
-                            selectedTicket = { ...ticket, final_price: ourPrice };
-                        };
-                        container.appendChild(card);
-                    });
-                } else {
-                    container.innerHTML = '<div class="card" style="text-align:center;">Прямых рейсов не найдено. Нажмите продолжить для индивидуального расчета.</div>';
-                    selectedTicket = "Индивидуальный расчет";
-                }
-            } catch (e) { container.innerHTML = 'Ошибка загрузки данных.'; }
-        }
-
-        // Финал
-        function finishOrder() {
-            const data = {
-                from: document.getElementById('origin').value,
-                to: document.getElementById('destination').value,
-                date: document.getElementById('date').value,
-                passengers: document.getElementById('passengers').value,
-                class: document.getElementById('class').value,
-                baggage: document.getElementById('baggage').value,
-                name: document.getElementById('name').value,
-                phone: document.getElementById('phone').value,
-                email: document.getElementById('email').value,
-                telegram: document.getElementById('telegram').value,
-                ticket_details: selectedTicket
-            };
-
-            if (!data.name || data.phone.length < 10) {
-                tg.showAlert("Заполните контактные данные!");
-                return;
-            }
-
-            document.body.classList.add('closing-app');
-            setTimeout(() => {
-                tg.sendData(JSON.stringify(data));
-                tg.close();
-            }, 800);
-        }
-
-        // Автокомплит (остался без изменений в логике)
-        async function searchPlaces(query) {
-            if (query.length < 2) return [];
-            const r = await fetch(`https://autocomplete.travelpayouts.com/places2?term=${query}&locale=ru&types[]=city`);
-            return await r.json();
-        }
-
-        function setupAutocomplete(inputId, suggestionsId, isOrigin) {
-            const input = document.getElementById(inputId);
-            const list = document.getElementById(suggestionsId);
-            input.addEventListener('input', async () => {
-                const res = await searchPlaces(input.value);
-                list.innerHTML = '';
-                if (res.length > 0) {
-                    res.forEach(item => {
-                        const div = document.createElement('div');
-                        div.className = 'suggestion';
-                        div.innerHTML = `${item.name} (${item.code}) <div>${item.country_name}</div>`;
-                        div.onclick = () => {
-                            input.value = item.name + ' (' + item.code + ')';
-                            if(isOrigin) originCode = item.code; else destCode = item.code;
-                            list.classList.remove('active');
-                        };
-                        list.appendChild(div);
-                    });
-                    list.classList.add('active');
-                } else list.classList.remove('active');
-            });
-        }
-
-        setupAutocomplete('origin', 'origin-suggestions', true);
-        setupAutocomplete('destination', 'destination-suggestions', false);
-        document.getElementById('date').valueAsDate = new Date();
-
-        // Маска телефона
-        document.getElementById('phone').addEventListener('input', function(e) {
-            let x = this.value.replace(/\D/g, '').match(/(\d{0,1})(\d{0,3})(\d{0,3})(\d{0,2})(\d{0,2})/);
-            this.value = !x[3] ? '+7 (' + (x[2]||'') : '+7 (' + x[2] + ') ' + x[3] + (x[4] ? '-' + x[4] : '') + (x[5] ? '-' + x[5] : '');
-        });
-
-        // Декор
-        function createStars() {
-            const container = document.getElementById('stars-container');
-            for (let i = 0; i < 6; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                star.style.left = Math.random() * 100 + 'vw';
-                star.style.animationDelay = Math.random() * 5 + 's, 0s';
-                container.appendChild(star);
-            }
-        }
-        createStars();
-        
-        const hints = ["Сейчас этот рейс смотрят {n} чел.", "Осталось 3 билета по этой цене", "Популярное направление сегодня"];
-        setInterval(() => {
-            const n = Math.floor(Math.random() * 4) + 2;
-            document.getElementById('liveHint').innerText = hints[Math.floor(Math.random() * hints.length)].replace('{n}', n);
-        }, 5000);
-    </script>
 </body>
 </html>
