@@ -257,10 +257,8 @@
         document.getElementById('loading-status').innerText = "Ищем лучшие билеты...";
 
         try {
-            // Используем cors-anywhere прокси или прямой запрос (если API позволяет)
-            // ВАЖНО: Мы запрашиваем через API Travelpayouts напрямую в приложении
-            const token = "c6dd78e239fcf7c47f3f9fd58c0e2b8c";
-            const url = `https://api.travelpayouts.com/aviasales/v3/prices_for_dates?origin=${selectedOrigin}&destination=${selectedDestination}&departure_at=${date}&currency=rub&token=${token}&limit=10`;
+            // Запрос идет на твой сервер Aeza (порт 8080), который проксирует его в Aviasales
+            const url = `http://138.124.54.178:8080/search?origin=${selectedOrigin}&destination=${selectedDestination}&departure_at=${date}`;
             
             const response = await fetch(url);
             const resData = await response.json();
