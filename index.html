@@ -18,8 +18,7 @@
             margin: 0; padding: 15px;
             font-family: 'Segoe UI', Roboto, sans-serif;
             background: var(--bg-night);
-            min-height: 100vh; display: flex; align-items: center; justify-content: center;
-            /* Изменено для включения прокрутки */
+            min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
             overflow-y: auto;
             color: white;
             transition: background 5s ease-in-out;
@@ -106,7 +105,7 @@
             border: 1px solid rgba(255, 255, 255, 0.15);
             box-sizing: border-box;
             transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            margin: 20px 0; /* Добавлен отступ для комфортной прокрутки */
+            margin: 20px 0;
         }
 
         /* Анимация закрытия */
@@ -172,6 +171,26 @@
             text-align: center; font-size: 11px; color: rgba(255,255,255,0.5);
             margin-top: 15px; min-height: 14px; font-style: italic;
         }
+
+        /* --- СТИЛИ ДЛЯ РЕЗУЛЬТАТОВ API --- */
+        #results-container {
+            width: 100%; max-width: 380px; z-index: 10; margin-bottom: 30px;
+        }
+        .ticket-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px; padding: 15px; margin-bottom: 12px;
+            animation: fadeIn 0.5s ease forwards;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .ticket-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .airline-info { font-weight: bold; color: var(--accent); font-size: 14px; }
+        .price-info { font-size: 18px; font-weight: 800; color: #fff; }
+        .price-old { text-decoration: line-through; color: rgba(255,255,255,0.4); font-size: 12px; margin-right: 5px; }
+        .ticket-route { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+        .route-line { flex: 1; height: 1px; background: rgba(255,255,255,0.2); position: relative; }
+        .route-line::after { content: '✈️'; position: absolute; top: -10px; left: 45%; font-size: 12px; }
     </style>
 </head>
 <body>
@@ -256,10 +275,14 @@
         <div class="live-hint" id="liveHint"></div>
     </div>
 
+    <div id="results-container"></div>
+
     <script>
         const tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
+
+        const API_TOKEN = "c6dd78e239fcf7c47f3f9fd58c0e2b8c"; // Твой токен
 
         const hints = [
             "Сейчас этот рейс смотрят {n} человека",
@@ -306,6 +329,10 @@
             }
         });
 
+        // ПЕРЕМЕННЫЕ ДЛЯ ХРАНЕНИЯ КОДОВ IATA
+        let originCode = "";
+        let destCode = "";
+
         async function searchPlaces(query) {
             if (query.length < 2) return [];
             try {
@@ -314,7 +341,56 @@
             } catch (e) { return []; }
         }
 
-        function setupAutocomplete(inputId, suggestionsId) {
+        // ФУНКЦИЯ ПОИСКА ЦЕН ЧЕРЕЗ API
+        async function fetchPrices() {
+            if (!originCode || !destCode) return;
+            
+            const resultsContainer = document.getElementById('results-container');
+            resultsContainer.innerHTML = '<div style="text-align:center; font-size:12px; opacity:0.6;">Ищем лучшие предложения...</div>';
+
+            const dateVal = document.getElementById('date').value.substring(0, 7); // формат YYYY-MM
+            
+            try {
+                const url = `https://api.travelpayouts.com/aviasales/v3/prices_for_dates?origin=${originCode}&destination=${destCode}&departure_at=${dateVal}&currency=rub&limit=3&token=${API_TOKEN}`;
+                const response = await fetch(url);
+                const json = await response.json();
+
+                resultsContainer.innerHTML = '';
+
+                if (json.success && json.data.length > 0) {
+                    json.data.forEach(ticket => {
+                        const card = document.createElement('div');
+                        card.className = 'ticket-card';
+                        
+                        // Рассчитываем нашу "скидку" для визуала (например -20% от цены API)
+                        const ourPrice = Math.floor(ticket.price * 0.82);
+
+                        card.innerHTML = `
+                            <div class="ticket-header">
+                                <div class="airline-info">✈️ Рейс ${ticket.airline}</div>
+                                <div class="price-info">
+                                    <span class="price-old">${ticket.price} ₽</span>
+                                    <span>${ourPrice} ₽</span>
+                                </div>
+                            </div>
+                            <div class="ticket-route">
+                                <span>${ticket.origin}</span>
+                                <div class="route-line"></div>
+                                <span>${ticket.destination}</span>
+                            </div>
+                            <div style="font-size:10px; margin-top:8px; opacity:0.5;">Вылет: ${new Date(ticket.departure_at).toLocaleDateString('ru-RU')}</div>
+                        `;
+                        resultsContainer.appendChild(card);
+                    });
+                } else {
+                    resultsContainer.innerHTML = '<div style="text-align:center; font-size:12px; opacity:0.4;">На эту дату прямых квот пока нет, заполните заявку для ручного поиска.</div>';
+                }
+            } catch (e) {
+                resultsContainer.innerHTML = '';
+            }
+        }
+
+        function setupAutocomplete(inputId, suggestionsId, isOrigin) {
             const input = document.getElementById(inputId);
             const list = document.getElementById(suggestionsId);
             let timeout;
@@ -332,7 +408,9 @@
                             div.innerHTML = `${typeLabel}${item.name} (${item.code}) <div>${item.country_name}</div>`;
                             div.onclick = () => {
                                 input.value = item.name + ' (' + item.code + ')';
+                                if(isOrigin) originCode = item.code; else destCode = item.code;
                                 list.classList.remove('active');
+                                fetchPrices(); // Ищем цены при выборе города
                             };
                             list.appendChild(div);
                         });
@@ -343,9 +421,10 @@
             document.addEventListener('click', (e) => { if (e.target !== input) list.classList.remove('active'); });
         }
 
-        setupAutocomplete('origin', 'origin-suggestions');
-        setupAutocomplete('destination', 'destination-suggestions');
+        setupAutocomplete('origin', 'origin-suggestions', true);
+        setupAutocomplete('destination', 'destination-suggestions', false);
         document.getElementById('date').valueAsDate = new Date();
+        document.getElementById('date').addEventListener('change', fetchPrices);
 
         function sendOrder() {
             const data = {
