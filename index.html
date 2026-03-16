@@ -23,6 +23,7 @@
             width: 100%;
             max-width: 400px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
         }
         h1 {
             text-align: center;
@@ -32,6 +33,7 @@
         }
         .form-group {
             margin-bottom: 15px;
+            position: relative;
         }
         label {
             display: block;
@@ -51,6 +53,27 @@
         }
         input::placeholder {
             color: rgba(255, 255, 255, 0.5);
+        }
+        .autocomplete-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #2c4e72;
+            border-radius: 10px;
+            z-index: 1000;
+            max-height: 200px;
+            overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            display: none;
+        }
+        .autocomplete-item {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .autocomplete-item:hover {
+            background: rgba(255, 255, 255, 0.1);
         }
         .btn {
             width: 100%;
@@ -74,17 +97,19 @@
 </head>
 <body>
 
-<div class="container" id="search-screen">
+<div class="container">
     <h1>KUPIAVIA ✈️</h1>
     
     <div class="form-group">
         <label>ОТКУДА</label>
-        <input type="text" id="from" placeholder="Минеральные Воды">
+        <input type="text" id="from" placeholder="Город или аэропорт" autocomplete="off">
+        <div id="from-results" class="autocomplete-results"></div>
     </div>
 
     <div class="form-group">
         <label>КУДА</label>
-        <input type="text" id="to" placeholder="Махачкала (MCX)">
+        <input type="text" id="to" placeholder="Город или аэропорт" autocomplete="off">
+        <div id="to-results" class="autocomplete-results"></div>
     </div>
 
     <div style="display: flex; gap: 10px;">
@@ -95,9 +120,9 @@
         <div class="form-group" style="flex: 1;">
             <label>ПАССАЖИРЫ</label>
             <select id="passengers">
-                <option>1 чел.</option>
-                <option>2 чел.</option>
-                <option>3 чел.</option>
+                <option value="1">1 чел.</option>
+                <option value="2">2 чел.</option>
+                <option value="3">3 чел.</option>
             </select>
         </div>
     </div>
@@ -137,25 +162,73 @@
     let tg = window.Telegram.WebApp;
     tg.expand();
 
+    let selectedOrigin = "";
+    let selectedDestination = "";
+
+    async function searchCities(query, resultsId, inputId, type) {
+        if (query.length < 2) {
+            document.getElementById(resultsId).style.display = 'none';
+            return;
+        }
+
+        try {
+            const response = await fetch(`https://autocomplete.travelpayouts.com/places2?term=${query}&locale=ru&types[]=city&types[]=airport`);
+            const data = await response.json();
+            
+            const resultsContainer = document.getElementById(resultsId);
+            resultsContainer.innerHTML = '';
+            resultsContainer.style.display = 'block';
+
+            data.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'autocomplete-item';
+                const name = item.name || item.main_airport_name;
+                div.textContent = `${name} (${item.code})`;
+                div.onclick = () => {
+                    document.getElementById(inputId).value = `${name} (${item.code})`;
+                    if (type === 'from') selectedOrigin = item.code;
+                    else selectedDestination = item.code;
+                    resultsContainer.style.display = 'none';
+                };
+                resultsContainer.appendChild(div);
+            });
+        } catch (e) {
+            console.error("Search error:", e);
+        }
+    }
+
+    document.getElementById('from').oninput = (e) => searchCities(e.target.value, 'from-results', 'from', 'from');
+    document.getElementById('to').oninput = (e) => searchCities(e.target.value, 'to-results', 'to', 'to');
+
     function sendOrder() {
         let data = {
             action: "search_tickets",
             from: document.getElementById('from').value,
             to: document.getElementById('to').value,
-            origin: "MRV", // Для примера кода IATA города (нужно будет доработать автоподстановку)
-            destination: "MCX",
+            origin: selectedOrigin,
+            destination: selectedDestination,
             departure_at: document.getElementById('date').value,
-            date: document.getElementById('date').value,
+            passengers: document.getElementById('passengers').value,
             class: document.getElementById('class').value,
             baggage: document.getElementById('baggage').value,
             phone: document.getElementById('phone').value,
             telegram: document.getElementById('telegram').value
         };
 
-        // Мы отправляем данные боту. Бот сам сделает запрос к API и решит проблему CORS.
+        if (!data.origin || !data.destination || !data.departure_at) {
+            alert("Пожалуйста, выберите города из списка и укажите дату.");
+            return;
+        }
+
         tg.sendData(JSON.stringify(data));
         tg.close();
     }
+
+    document.onclick = (e) => {
+        if (!e.target.closest('.form-group')) {
+            document.querySelectorAll('.autocomplete-results').forEach(el => el.style.display = 'none');
+        }
+    };
 </script>
 
 </body>
