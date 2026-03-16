@@ -94,7 +94,26 @@
             margin-top: 15px;
             color: rgba(255, 255, 255, 0.5);
         }
-        /* Стили для второй страницы */
+        /* Стили для карточек билетов */
+        #results-list {
+            margin-top: 20px;
+        }
+        .ticket-card {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 179, 71, 0.3);
+        }
+        .ticket-price {
+            font-size: 20px;
+            color: #ffb347;
+            font-weight: bold;
+        }
+        .ticket-info {
+            font-size: 14px;
+            margin: 5px 0;
+        }
         #results-screen {
             display: none;
         }
@@ -179,9 +198,8 @@
 <div class="container" id="results-screen">
     <h1>ВЫБЕРИТЕ РЕЙС ✈️</h1>
     
-    <div id="loading-status" class="error-msg">Загрузка данных...</div>
-
-    <button class="btn" id="final-btn" style="display:none;" onclick="sendOrder()">ОФОРМИТЬ</button>
+    <div id="loading-status" class="error-msg">Ищем лучшие билеты...</div>
+    <div id="results-list"></div>
     
     <a href="#" class="back-link" onclick="goBack()">← Назад к поиску</a>
 </div>
@@ -192,6 +210,7 @@
 
     let selectedOrigin = "";
     let selectedDestination = "";
+    let currentTickets = [];
 
     async function searchCities(query, resultsId, inputId, type) {
         if (query.length < 2) {
@@ -224,21 +243,51 @@
     document.getElementById('from').oninput = (e) => searchCities(e.target.value, 'from-results', 'from', 'from');
     document.getElementById('to').oninput = (e) => searchCities(e.target.value, 'to-results', 'to', 'to');
 
-    function goToResults() {
-        if (!selectedOrigin || !selectedDestination || !document.getElementById('date').value) {
+    async function goToResults() {
+        const date = document.getElementById('date').value;
+        if (!selectedOrigin || !selectedDestination || !date) {
             alert("Пожалуйста, заполните все данные поиска.");
             return;
         }
+        
         document.getElementById('search-screen').style.display = 'none';
         document.getElementById('results-screen').style.display = 'block';
-        
-        // Здесь имитируем ошибку загрузки, как на твоем скриншоте, 
-        // так как реальные данные придут в бота через tg.sendData
-        setTimeout(() => {
-            document.getElementById('loading-status').innerText = "Ошибка загрузки данных.";
-            document.getElementById('final-btn').style.display = 'block';
-            document.getElementById('final-btn').innerText = "ПРОДОЛЖИТЬ";
-        }, 1000);
+        document.getElementById('results-list').innerHTML = '';
+        document.getElementById('loading-status').style.display = 'block';
+        document.getElementById('loading-status').innerText = "Ищем лучшие билеты...";
+
+        try {
+            // Используем cors-anywhere прокси или прямой запрос (если API позволяет)
+            // ВАЖНО: Мы запрашиваем через API Travelpayouts напрямую в приложении
+            const token = "c6dd78e239fcf7c47f3f9fd58c0e2b8c";
+            const url = `https://api.travelpayouts.com/aviasales/v3/prices_for_dates?origin=${selectedOrigin}&destination=${selectedDestination}&departure_at=${date}&currency=rub&token=${token}&limit=10`;
+            
+            const response = await fetch(url);
+            const resData = await response.json();
+
+            document.getElementById('loading-status').style.display = 'none';
+
+            if (resData.success && resData.data.length > 0) {
+                resData.data.forEach((ticket, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'ticket-card';
+                    card.innerHTML = `
+                        <div class="ticket-price">${ticket.price} ₽</div>
+                        <div class="ticket-info">✈️ Рейс: ${ticket.airline} ${ticket.flight_number}</div>
+                        <div class="ticket-info">📅 Вылет: ${ticket.departure_at.replace('T', ' ')}</div>
+                        <div class="ticket-info">🔄 Пересадок: ${ticket.transfers}</div>
+                        <button class="btn" style="margin-top:10px; padding:10px; font-size:14px;" onclick="sendOrder(${index})">ОФОРМИТЬ</button>
+                    `;
+                    document.getElementById('results-list').appendChild(card);
+                });
+                currentTickets = resData.data;
+            } else {
+                document.getElementById('loading-status').innerText = "Билетов не найдено. Попробуйте другую дату.";
+            }
+        } catch (e) {
+            document.getElementById('loading-status').innerText = "Ошибка загрузки. Проверьте соединение.";
+            console.error(e);
+        }
     }
 
     function goBack() {
@@ -246,19 +295,20 @@
         document.getElementById('search-screen').style.display = 'block';
     }
 
-    function sendOrder() {
+    function sendOrder(index) {
+        const ticket = currentTickets[index];
         let data = {
-            action: "search_tickets",
+            action: "final_order",
             from: document.getElementById('from').value,
             to: document.getElementById('to').value,
-            origin: selectedOrigin,
-            destination: selectedDestination,
-            departure_at: document.getElementById('date').value,
-            passengers: document.getElementById('passengers').value,
-            class: document.getElementById('class').value,
-            baggage: document.getElementById('baggage').value,
+            date: document.getElementById('date').value,
+            price: ticket.price,
+            airline: ticket.airline,
+            flight: ticket.flight_number,
             phone: document.getElementById('phone').value,
-            telegram: document.getElementById('telegram').value
+            telegram: document.getElementById('telegram').value,
+            class: document.getElementById('class').value,
+            baggage: document.getElementById('baggage').value
         };
 
         tg.sendData(JSON.stringify(data));
