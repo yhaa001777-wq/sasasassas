@@ -249,7 +249,7 @@
 
         <div class="btn-box" id="btnBox">
             <button class="btn" onclick="sendOrder()">
-                <span>Оставить заявку</span>
+                <span>Посмотреть билеты</span>
                 <span class="plane-anim">✈️</span>
             </button>
         </div>
@@ -260,6 +260,9 @@
         const tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
+
+        let iata_origin = "";
+        let iata_destination = "";
 
         const hints = [
             "Сейчас этот рейс смотрят {n} человека",
@@ -314,7 +317,7 @@
             } catch (e) { return []; }
         }
 
-        function setupAutocomplete(inputId, suggestionsId) {
+        function setupAutocomplete(inputId, suggestionsId, type) {
             const input = document.getElementById(inputId);
             const list = document.getElementById(suggestionsId);
             let timeout;
@@ -332,6 +335,8 @@
                             div.innerHTML = `${typeLabel}${item.name} (${item.code}) <div>${item.country_name}</div>`;
                             div.onclick = () => {
                                 input.value = item.name + ' (' + item.code + ')';
+                                if(type === 'origin') iata_origin = item.code;
+                                if(type === 'dest') iata_destination = item.code;
                                 list.classList.remove('active');
                             };
                             list.appendChild(div);
@@ -343,12 +348,15 @@
             document.addEventListener('click', (e) => { if (e.target !== input) list.classList.remove('active'); });
         }
 
-        setupAutocomplete('origin', 'origin-suggestions');
-        setupAutocomplete('destination', 'destination-suggestions');
+        setupAutocomplete('origin', 'origin-suggestions', 'origin');
+        setupAutocomplete('destination', 'destination-suggestions', 'dest');
         document.getElementById('date').valueAsDate = new Date();
 
         function sendOrder() {
             const data = {
+                action: "search_tickets",
+                origin_code: iata_origin,
+                destination_code: iata_destination,
                 from: document.getElementById('origin').value,
                 to: document.getElementById('destination').value,
                 date: document.getElementById('date').value,
